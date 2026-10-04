@@ -1,0 +1,4 @@
+{
+  "rationale": "'debug_info' is assigned inside the nested helper() but never used. Removing the dead assignment is the minimal fix.",
+  "confidence": 0.9
+}

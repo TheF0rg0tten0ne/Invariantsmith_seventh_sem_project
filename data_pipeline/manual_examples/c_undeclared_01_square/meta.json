@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'result' doesn't exist -- the function's real parameter is 'n', which is what should be squared.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

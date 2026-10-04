@@ -1,0 +1,4 @@
+{
+  "rationale": "The dict comprehension's opening brace is never closed.",
+  "confidence": 0.95
+}

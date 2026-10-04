@@ -1,0 +1,4 @@
+{
+  "rationale": "The list literal's opening bracket in this method is never closed.",
+  "confidence": 0.95
+}

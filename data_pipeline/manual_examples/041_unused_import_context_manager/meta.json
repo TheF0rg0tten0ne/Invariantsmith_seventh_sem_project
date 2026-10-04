@@ -1,0 +1,4 @@
+{
+  "rationale": "'contextlib' is imported but open()'s built-in context manager support is used directly -- nothing from contextlib (suppress, contextmanager, etc.) is referenced. Removing the unused import is the minimal fix.",
+  "confidence": 0.85
+}

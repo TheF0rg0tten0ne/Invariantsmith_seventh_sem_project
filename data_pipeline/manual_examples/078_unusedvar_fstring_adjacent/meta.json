@@ -1,0 +1,4 @@
+{
+  "rationale": "'currency_symbol' is assigned but the f-string hardcodes the '$' literally instead of referencing the variable. Removing the dead assignment is the minimal fix (rather than rewriting the f-string to use it, which would be a larger, non-minimal change to the string itself).",
+  "confidence": 0.7
+}

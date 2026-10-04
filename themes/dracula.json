@@ -1,0 +1,32 @@
+{
+  "name": "dracula",
+  "label": "Invariantsmith Dracula",
+  "colors": {
+    "background": "#282a36",
+    "foreground": "#f8f8f2",
+    "gutter": "#333544",
+    "selection": "#44475a",
+    "cursor": "#f8f8f0",
+
+    "keyword": "#ff79c6",
+    "string": "#f1fa8c",
+    "number": "#bd93f9",
+    "comment": "#6272a4",
+    "function": "#50fa7b",
+    "class": "#8be9fd",
+    "variable": "#f8f8f2",
+    "operator": "#ff79c6",
+
+    "error-underline": "#ff5555",
+    "warning-underline": "#f1fa8c",
+
+    "ai-suggestion-bg": "#1e3a2f",
+    "ai-suggestion-text": "#50fa7b",
+    "ai-ghost-text": "#6272a4",
+
+    "diff-add-bg": "#22392b",
+    "diff-add-text": "#50fa7b",
+    "diff-remove-bg": "#3a2233",
+    "diff-remove-text": "#ff5555"
+  }
+}

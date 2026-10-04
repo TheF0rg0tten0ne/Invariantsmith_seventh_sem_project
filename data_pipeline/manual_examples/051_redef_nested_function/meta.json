@@ -1,0 +1,4 @@
+{
+  "rationale": "'clean' is defined twice inside process(); the first definition is immediately shadowed and never called. Removing the dead first definition resolves the redefinition.",
+  "confidence": 0.85
+}

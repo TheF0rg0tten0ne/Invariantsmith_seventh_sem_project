@@ -1,0 +1,4 @@
+{
+  "rationale": "'require_auth' is defined twice at module level; the first (no-op) version is shadowed by the second before anything else in the file could reference it. Removing the dead first definition resolves the redefinition.",
+  "confidence": 0.85
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'shutil' is imported but add() never touches the filesystem. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'assert (a > 0, b > 0)' asserts a non-empty tuple, which is always truthy regardless of the two conditions -- the assertion can never fail even when both are false. Replacing it with a proper boolean expression ('a > 0 and b > 0') makes the assertion actually check what was intended.",
+  "confidence": 0.9
+}

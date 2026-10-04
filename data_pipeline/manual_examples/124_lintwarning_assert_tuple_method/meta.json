@@ -1,0 +1,4 @@
+{
+  "rationale": "The assert wraps two conditions in a tuple, which is always truthy and so never actually validates anything. Replacing it with a proper 'and' expression makes the assertion check both conditions as intended.",
+  "confidence": 0.9
+}

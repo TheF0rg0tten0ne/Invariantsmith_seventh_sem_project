@@ -1,0 +1,4 @@
+{
+  "rationale": "'prefix' is assigned but this generator function yields plain integers, never using the prefix string anywhere. Removing the dead assignment is the minimal fix.",
+  "confidence": 0.85
+}

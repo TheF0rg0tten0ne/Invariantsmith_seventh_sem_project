@@ -1,0 +1,4 @@
+{
+  "rationale": "'time' is imported but the wrapper never calls time.time() or similar despite the decorator's name suggesting timing -- as written, no timing logic exists, so the import is genuinely unused. Removing it is the minimal fix (adding timing logic would be a much larger, non-minimal change).",
+  "confidence": 0.65
+}

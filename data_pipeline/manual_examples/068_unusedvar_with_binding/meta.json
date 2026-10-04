@@ -1,0 +1,4 @@
+{
+  "rationale": "The opened file is bound to 'fh' but never referenced inside the with-block. Dropping the 'as fh' binding is the minimal fix since the file only needs to be opened (and auto-closed) for its side effect.",
+  "confidence": 0.85
+}

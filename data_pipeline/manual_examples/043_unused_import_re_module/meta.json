@@ -1,0 +1,4 @@
+{
+  "rationale": "'re' is imported but the function just uses str.split(), no regular expressions. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'main' is missing its opening '{' -- gcc parses the while loop and the printf calls that follow as file-scope declarations instead of statements, producing a cascade of syntax errors. Adding the '{' resolves the whole cascade; the loop and the two printf format strings are unchanged.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

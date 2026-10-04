@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'r' doesn't exist -- the function's real parameter is 'radius'.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

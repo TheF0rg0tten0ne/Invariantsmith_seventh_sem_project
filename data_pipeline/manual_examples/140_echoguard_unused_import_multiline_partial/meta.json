@@ -1,0 +1,4 @@
+{
+  "rationale": "'time' is imported alongside 'sys' but never referenced -- uptime_label() doesn't call time.time() or sleep(), while 'sys' is actually used for the stderr print. Dropping 'time' from the import line while keeping 'sys' is the minimal fix.",
+  "confidence": 0.85
+}

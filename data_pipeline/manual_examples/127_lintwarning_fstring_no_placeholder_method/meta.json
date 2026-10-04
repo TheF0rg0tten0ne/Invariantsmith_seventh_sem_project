@@ -1,0 +1,4 @@
+{
+  "rationale": "The f-string has no placeholder braces around 'total', so it prints the literal word instead of interpolating self.total. Adding the braces and the correct attribute reference fixes the interpolation.",
+  "confidence": 0.8
+}

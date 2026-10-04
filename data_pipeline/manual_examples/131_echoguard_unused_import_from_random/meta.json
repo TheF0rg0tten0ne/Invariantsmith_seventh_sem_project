@@ -1,0 +1,4 @@
+{
+  "rationale": "'randint' is imported from random but double() is fully deterministic and never calls it. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'error_lines' is built via a list comprehension but never read -- the function actually just checks whether any log lines exist at all, not whether any contain 'ERROR'. Removing the dead assignment is the minimal fix that matches what the return statement actually does (a behavior-changing fix, like using error_lines in the return, would not be minimal).",
+  "confidence": 0.6
+}

@@ -1,0 +1,5 @@
+{
+  "language": "java",
+  "rationale": "'Collections' is imported but the code only ever uses 'ArrayList', never 'Collections' -- drop the unused import.",
+  "confidence": 0.9
+}

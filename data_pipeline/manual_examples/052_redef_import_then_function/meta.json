@@ -1,0 +1,4 @@
+{
+  "rationale": "The module 'validate' is imported and then immediately shadowed by a function also named validate, making the import dead and the redefinition pointless. Since the function is what's actually called, dropping the unused import resolves the redefinition.",
+  "confidence": 0.75
+}

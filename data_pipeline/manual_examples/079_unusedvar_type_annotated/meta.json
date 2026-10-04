@@ -1,0 +1,4 @@
+{
+  "rationale": "'variance' is declared with a type annotation and initialized but never used anywhere in the function. Removing the dead annotated assignment is the minimal fix.",
+  "confidence": 0.85
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'Path' is imported from pathlib but make_config never touches the filesystem. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

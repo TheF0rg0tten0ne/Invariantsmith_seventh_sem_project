@@ -1,0 +1,3 @@
+{
+  "notes": "Python's // is already integer division matching C/Java's default int/int division, and Java's array carries its own .length instead of needing a separate count parameter like C does."
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'assert (a, b, c)' asserts a three-element tuple, which is always truthy regardless of a, b, and c's actual values -- the assertion can never fail. Replacing it with a proper boolean expression makes the assertion actually check all three conditions.",
+  "confidence": 0.85
+}

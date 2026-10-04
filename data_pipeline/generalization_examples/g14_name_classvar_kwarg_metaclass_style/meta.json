@@ -1,0 +1,4 @@
+{
+  "rationale": "'plugin_name' is used as a class-definition keyword argument but never defined anywhere. Replacing it with a literal default string resolves the undefined name.",
+  "confidence": 0.55
+}

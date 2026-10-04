@@ -1,0 +1,4 @@
+{
+  "rationale": "'Cache' is first defined as a function, then immediately shadowed by a same-named class before the function is ever called. Removing the dead function definition and keeping the class resolves the redefinition -- the reverse ordering of the same binding-kind clash as a class shadowed by a function.",
+  "confidence": 0.85
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'clean_token' is called inside the comprehension but never defined or imported. Since the intent was clearly to normalize each string, inlining strip().lower() replaces the undefined helper with equivalent, self-contained logic.",
+  "confidence": 0.75
+}

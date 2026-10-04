@@ -1,0 +1,4 @@
+{
+  "rationale": "'asyncio' is imported but process_batch is a fully synchronous function with no coroutines, gather, or event loop usage. Removing the unused import is the minimal fix.",
+  "confidence": 0.9
+}

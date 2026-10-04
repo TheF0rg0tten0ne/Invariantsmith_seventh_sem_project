@@ -1,0 +1,1 @@
+{"rationale": "'greet' is defined twice, so the second definition silently shadows the first. Renaming the second function preserves both behaviors.", "confidence": 0.8}

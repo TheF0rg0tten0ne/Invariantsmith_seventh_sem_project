@@ -1,0 +1,4 @@
+{
+  "rationale": "'logging' is imported at module level but the Cache class never calls into it. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

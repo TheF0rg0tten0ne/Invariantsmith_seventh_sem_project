@@ -1,0 +1,4 @@
+{
+  "rationale": "The function signature has an extra stray closing parenthesis after the parameter list ('high))' instead of 'high)'), which is invalid syntax. Removing the extra parenthesis resolves it.",
+  "confidence": 0.9
+}

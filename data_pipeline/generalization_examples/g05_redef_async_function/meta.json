@@ -1,0 +1,4 @@
+{
+  "rationale": "'fetch' is defined twice as an async function; the first, no-op version is shadowed before anything could await it. Removing the dead first definition resolves the redefinition.",
+  "confidence": 0.85
+}

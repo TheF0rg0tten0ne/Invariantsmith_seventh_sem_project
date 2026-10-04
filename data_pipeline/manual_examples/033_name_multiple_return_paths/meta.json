@@ -1,0 +1,4 @@
+{
+  "rationale": "'not_found_label' is referenced in one branch but never defined anywhere. Replacing it with the literal string 'not found', consistent with the sibling branches' style of returning plain string literals, resolves the undefined name.",
+  "confidence": 0.75
+}

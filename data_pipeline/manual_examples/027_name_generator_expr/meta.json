@@ -1,0 +1,4 @@
+{
+  "rationale": "'score' is called as a free function inside the generator expression but never defined or imported. Given entries already expose '.active', accessing '.score' as an attribute instead matches the evident data shape and removes the undefined name.",
+  "confidence": 0.55
+}

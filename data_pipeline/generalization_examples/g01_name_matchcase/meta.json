@@ -1,0 +1,4 @@
+{
+  "rationale": "'missing_label' is referenced inside a match-case body but never defined. Replacing it with a literal string, consistent with the sibling case bodies, resolves the undefined name.",
+  "confidence": 0.8
+}

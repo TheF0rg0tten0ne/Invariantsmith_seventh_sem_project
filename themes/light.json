@@ -1,0 +1,32 @@
+{
+  "name": "light",
+  "label": "Invariantsmith Light",
+  "colors": {
+    "background": "#ffffff",
+    "foreground": "#1f2328",
+    "gutter": "#f0f1f3",
+    "selection": "#cfe4ff",
+    "cursor": "#000000",
+
+    "keyword": "#a626a4",
+    "string": "#50a14f",
+    "number": "#986801",
+    "comment": "#a0a1a7",
+    "function": "#4078f2",
+    "class": "#c18401",
+    "variable": "#e45649",
+    "operator": "#1f2328",
+
+    "error-underline": "#e45649",
+    "warning-underline": "#c18401",
+
+    "ai-suggestion-bg": "#e6f4ea",
+    "ai-suggestion-text": "#1e7d3c",
+    "ai-ghost-text": "#9aa0a6",
+
+    "diff-add-bg": "#e6ffec",
+    "diff-add-text": "#1a7f37",
+    "diff-remove-bg": "#ffebe9",
+    "diff-remove-text": "#cf222e"
+  }
+}

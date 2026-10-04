@@ -1,0 +1,4 @@
+{
+  "rationale": "'itertools' is imported but first() just indexes into the list directly. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'xml.etree.ElementTree' is imported and aliased as ET but never used -- make_id() just formats a string. Removing the unused import is the minimal fix.",
+  "confidence": 0.9
+}

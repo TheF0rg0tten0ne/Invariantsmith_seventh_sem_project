@@ -1,0 +1,4 @@
+{
+  "rationale": "A bare walrus operator ':=' is used as a statement, which Python's grammar disallows outside of an enclosing expression (like an if/while condition or parenthesized expression). Since this is really just meant to be a plain assignment, using '=' instead resolves it.",
+  "confidence": 0.75
+}

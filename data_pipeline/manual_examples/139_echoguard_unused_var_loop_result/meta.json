@@ -1,0 +1,4 @@
+{
+  "rationale": "'total' is computed but never referenced -- the return line recomputes len(values) directly instead. Removing the dead assignment is the minimal fix.",
+  "confidence": 0.9
+}

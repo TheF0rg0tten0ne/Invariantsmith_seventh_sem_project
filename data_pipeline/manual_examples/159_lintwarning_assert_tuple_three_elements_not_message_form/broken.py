@@ -1,0 +1,3 @@
+def validate_triplet(a, b, c):
+    assert (a >= 0, b >= 0, c >= 0)
+    return a + b + c

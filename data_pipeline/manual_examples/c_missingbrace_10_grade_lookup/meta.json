@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'grade_for' is missing its opening '{' -- gcc parses the if/else-if/else chain that follows as file-scope declarations instead of the function body, producing a cascade of syntax errors. Adding the '{' fixes the whole cascade; the multi-branch chain and the rest of main() are left untouched.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

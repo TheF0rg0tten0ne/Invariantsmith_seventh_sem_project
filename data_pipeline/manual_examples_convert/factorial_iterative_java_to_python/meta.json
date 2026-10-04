@@ -1,0 +1,3 @@
+{
+  "notes": "Python's ints are arbitrary-precision, so factorial can't overflow there the way it can in C/Java -- using 'long' in both gives reasonable headroom for the same small input without pretending the overflow risk doesn't exist."
+}

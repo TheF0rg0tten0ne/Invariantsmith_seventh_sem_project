@@ -1,0 +1,4 @@
+{
+  "rationale": "Only subtract() has a problem: 'diff' is computed but never used -- the function returns 'a - b' directly instead. add() and multiply() are already correct. Removing just the dead assignment in subtract() while leaving add() and multiply() completely untouched is the minimal fix.",
+  "confidence": 0.9
+}

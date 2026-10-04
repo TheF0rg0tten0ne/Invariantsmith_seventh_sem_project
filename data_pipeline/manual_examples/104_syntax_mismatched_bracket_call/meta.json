@@ -1,0 +1,4 @@
+{
+  "rationale": "The call to str() is opened with '(' but closed with ']' instead of ')'.",
+  "confidence": 0.9
+}

@@ -1,0 +1,3 @@
+{
+  "notes": "Python's list becomes a fixed-size array in C/Java since the length never changes; a for-each loop is the closest idiomatic match in all three."
+}

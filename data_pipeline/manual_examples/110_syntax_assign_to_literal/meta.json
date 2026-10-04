@@ -1,0 +1,4 @@
+{
+  "rationale": "'5 = x' attempts to assign to a numeric literal, which is never a valid assignment target. The evident intent was to bind the value to a variable, so it's rewritten as 'y = x' and the return updated to match.",
+  "confidence": 0.55
+}

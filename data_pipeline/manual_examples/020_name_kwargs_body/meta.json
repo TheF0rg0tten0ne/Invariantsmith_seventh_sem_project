@@ -1,0 +1,4 @@
+{
+  "rationale": "'DEFAULT_KEY' is referenced inside the function body but never defined. Defining it as a module-level constant resolves the undefined name; 'id' is a reasonable default lookup key given the fallback value shown.",
+  "confidence": 0.65
+}

@@ -1,0 +1,32 @@
+{
+  "name": "monokai",
+  "label": "Invariantsmith Monokai",
+  "colors": {
+    "background": "#272822",
+    "foreground": "#f8f8f2",
+    "gutter": "#2f3129",
+    "selection": "#49483e",
+    "cursor": "#f8f8f0",
+
+    "keyword": "#f92672",
+    "string": "#e6db74",
+    "number": "#ae81ff",
+    "comment": "#75715e",
+    "function": "#a6e22e",
+    "class": "#66d9ef",
+    "variable": "#f8f8f2",
+    "operator": "#f92672",
+
+    "error-underline": "#f92672",
+    "warning-underline": "#e6db74",
+
+    "ai-suggestion-bg": "#1e3a34",
+    "ai-suggestion-text": "#a6e22e",
+    "ai-ghost-text": "#75715e",
+
+    "diff-add-bg": "#233324",
+    "diff-add-text": "#a6e22e",
+    "diff-remove-bg": "#3a1f28",
+    "diff-remove-text": "#f92672"
+  }
+}

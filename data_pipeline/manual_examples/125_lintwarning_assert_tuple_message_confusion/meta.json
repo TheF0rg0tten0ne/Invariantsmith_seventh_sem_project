@@ -1,0 +1,4 @@
+{
+  "rationale": "The condition and message were mistakenly wrapped together in one tuple passed to assert (making it a two-element tuple, always truthy) instead of using assert's built-in 'condition, message' syntax. Removing the parentheses lets Python treat them as the separate condition and message they were meant to be.",
+  "confidence": 0.85
+}

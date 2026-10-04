@@ -1,0 +1,4 @@
+{
+  "rationale": "'compute_average' is defined twice; the first (simpler, unguarded) version is dead since the second, more defensive version shadows it. Removing the dead first definition resolves the redefinition, leaving compute_avg untouched since it's a distinct, still-used name.",
+  "confidence": 0.8
+}

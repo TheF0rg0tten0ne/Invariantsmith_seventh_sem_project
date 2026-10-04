@@ -1,0 +1,4 @@
+{
+  "rationale": "Of the five imports, only 'datetime' is never referenced by any of the three functions -- csv, io, math, and collections are each used exactly once. Removing just the unused 'datetime' import while leaving csv, io, math, and collections untouched (and all three functions unchanged) is the minimal fix.",
+  "confidence": 0.9
+}

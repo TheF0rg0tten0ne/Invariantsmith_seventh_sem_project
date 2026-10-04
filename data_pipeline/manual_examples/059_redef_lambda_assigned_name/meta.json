@@ -1,0 +1,4 @@
+{
+  "rationale": "'square' is first defined as a function, then immediately reassigned to a lambda before the function definition is ever used -- pyflakes flags this as a redefinition of the unused function. Removing the dead function definition and keeping the lambda assignment resolves it.",
+  "confidence": 0.85
+}

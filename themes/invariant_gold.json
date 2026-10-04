@@ -1,0 +1,32 @@
+{
+  "name": "invariant_gold",
+  "label": "Invariantsmith Gold",
+  "colors": {
+    "background": "#14151a",
+    "foreground": "#d8dae2",
+    "gutter": "#1b1d24",
+    "selection": "#3a3220",
+    "cursor": "#e6c378",
+
+    "keyword": "#c9a0e8",
+    "string": "#e3a35e",
+    "number": "#b7d49a",
+    "comment": "#5f6472",
+    "function": "#e8d27a",
+    "class": "#6fd0c4",
+    "variable": "#8fc6e8",
+    "operator": "#d8dae2",
+
+    "error-underline": "#e5484d",
+    "warning-underline": "#e6c378",
+
+    "ai-suggestion-bg": "#2c2514",
+    "ai-suggestion-text": "#e0b454",
+    "ai-ghost-text": "#6b6f7d",
+
+    "diff-add-bg": "#16301f",
+    "diff-add-text": "#7fd99a",
+    "diff-remove-bg": "#34191a",
+    "diff-remove-text": "#e88a8a"
+  }
+}

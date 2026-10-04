@@ -1,0 +1,4 @@
+{
+  "rationale": "The triple-quoted docstring is opened but never closed.",
+  "confidence": 0.9
+}

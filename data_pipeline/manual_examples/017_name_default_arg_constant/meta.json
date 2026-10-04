@@ -1,0 +1,4 @@
+{
+  "rationale": "'MAX_ALLOWED' is referenced but never defined anywhere in the file. Defining it as a module-level constant (100, a reasonable upper bound guess) resolves the undefined name.",
+  "confidence": 0.7
+}

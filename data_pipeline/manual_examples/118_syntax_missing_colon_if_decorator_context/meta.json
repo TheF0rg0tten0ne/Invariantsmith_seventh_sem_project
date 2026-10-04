@@ -1,0 +1,4 @@
+{
+  "rationale": "The if statement guarding the raise is missing its trailing colon.",
+  "confidence": 0.97
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "The exception is bound to 'e' but never referenced in the except block. Dropping the 'as e' binding (keeping the bare except Exception) is the minimal fix.",
+  "confidence": 0.9
+}

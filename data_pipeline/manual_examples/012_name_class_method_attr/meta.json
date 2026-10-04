@@ -1,0 +1,4 @@
+{
+  "rationale": "'discount_rate' is referenced inside total() but never defined anywhere -- adding it as a keyword argument with a neutral default (1.0, i.e. no discount) defines it without changing behavior for existing callers.",
+  "confidence": 0.85
+}

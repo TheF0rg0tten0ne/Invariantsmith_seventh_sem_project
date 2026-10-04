@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "printf() requires <stdio.h>; without it the declaration is implicit and undefined behavior on strict compilers.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

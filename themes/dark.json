@@ -1,0 +1,32 @@
+{
+  "name": "dark",
+  "label": "Invariantsmith Dark",
+  "colors": {
+    "background": "#1e1e24",
+    "foreground": "#d4d4d8",
+    "gutter": "#2a2a32",
+    "selection": "#3a3f52",
+    "cursor": "#ffffff",
+
+    "keyword": "#c586c0",
+    "string": "#ce9178",
+    "number": "#b5cea8",
+    "comment": "#6a9955",
+    "function": "#dcdcaa",
+    "class": "#4ec9b0",
+    "variable": "#9cdcfe",
+    "operator": "#d4d4d8",
+
+    "error-underline": "#f14c4c",
+    "warning-underline": "#e5c07b",
+
+    "ai-suggestion-bg": "#264f4a",
+    "ai-suggestion-text": "#7ee8c0",
+    "ai-ghost-text": "#6b7280",
+
+    "diff-add-bg": "#1e3a2e",
+    "diff-add-text": "#7ee8a1",
+    "diff-remove-bg": "#3a1e1e",
+    "diff-remove-text": "#e87e7e"
+  }
+}

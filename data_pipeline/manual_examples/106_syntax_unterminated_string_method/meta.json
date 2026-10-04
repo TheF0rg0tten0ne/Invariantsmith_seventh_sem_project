@@ -1,0 +1,4 @@
+{
+  "rationale": "The string literal returned by this method is never closed with a matching quote.",
+  "confidence": 0.95
+}

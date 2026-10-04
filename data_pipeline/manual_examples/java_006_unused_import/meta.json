@@ -1,0 +1,5 @@
+{
+  "language": "java",
+  "rationale": "'List' is imported but the code only ever uses the concrete 'ArrayList' type, never the 'List' interface -- drop the unused import.",
+  "confidence": 0.85
+}

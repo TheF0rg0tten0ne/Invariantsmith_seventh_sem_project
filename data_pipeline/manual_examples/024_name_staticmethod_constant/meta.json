@@ -1,0 +1,4 @@
+{
+  "rationale": "'FREEZING_OFFSET' is used but never defined. 32 is the standard Fahrenheit freezing-point offset implied by the formula, so it's added as a class attribute and referenced via the class name from the staticmethod (which has no implicit access to class scope).",
+  "confidence": 0.85
+}

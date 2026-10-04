@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'day_name' is missing its opening '{' -- gcc parses the switch statement that follows as a file-scope declaration instead of the function body, producing a cascade of syntax errors starting at 'switch'. Adding the '{' resolves the whole cascade; the switch/case structure itself is untouched.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

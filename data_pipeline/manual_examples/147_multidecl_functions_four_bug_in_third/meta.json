@@ -1,0 +1,4 @@
+{
+  "rationale": "Only celsius_to_kelvin() has a problem: 'kelvin_offset' is referenced but never defined anywhere in the file. The other three conversion functions are already correct and use the same constant (273.15) as a literal. Replacing the undefined name with that literal, consistent with kelvin_to_celsius() right below it, while leaving the other three functions untouched, is the minimal fix.",
+  "confidence": 0.85
+}

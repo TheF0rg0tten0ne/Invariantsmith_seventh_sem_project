@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "'classify' is missing its opening '{' -- javac parses the if/else-if/else chain that follows as class-body members instead of the method body, producing a cascade of syntax errors. Adding the '{' resolves the whole cascade; the three-way branch and main() are untouched.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

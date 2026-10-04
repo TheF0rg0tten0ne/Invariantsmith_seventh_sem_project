@@ -1,0 +1,3 @@
+{
+  "notes": "Python's bool prints as 'True'/'False' with a capital letter, so the C version prints matching literal strings for output parity; Java's boolean already prints lowercase 'true'/'false' by convention, left as-is rather than forced to match Python's casing."
+}

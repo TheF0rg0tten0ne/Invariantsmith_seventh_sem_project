@@ -1,0 +1,4 @@
+{
+  "rationale": "The while loop is missing its trailing colon, which Python requires to start the loop body.",
+  "confidence": 0.97
+}

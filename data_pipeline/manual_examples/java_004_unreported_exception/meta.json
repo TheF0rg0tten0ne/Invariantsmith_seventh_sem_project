@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "FileReader's constructor and read()/close() throw the checked IOException, which this method neither catches nor declares -- add 'throws IOException' to the signature.",
+  "confidence": 0.85,
+  "target_error_index": 0
+}

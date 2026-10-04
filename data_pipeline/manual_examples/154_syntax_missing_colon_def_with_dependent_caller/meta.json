@@ -1,0 +1,4 @@
+{
+  "rationale": "normalize() is missing its trailing colon. batch_normalize() is unrelated to the syntax error and already correctly calls normalize() -- fixing just the colon while leaving batch_normalize() completely untouched (not dropping it, not rewriting it) is the minimal fix.",
+  "confidence": 0.95
+}

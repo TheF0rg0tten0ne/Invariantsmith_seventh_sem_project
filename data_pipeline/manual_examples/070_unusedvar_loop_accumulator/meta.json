@@ -1,0 +1,4 @@
+{
+  "rationale": "'debug_snapshot' is built from records but never read anywhere in the function. Removing the dead assignment is the minimal fix.",
+  "confidence": 0.9
+}

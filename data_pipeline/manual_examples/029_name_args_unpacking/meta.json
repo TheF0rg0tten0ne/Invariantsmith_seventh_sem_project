@@ -1,0 +1,4 @@
+{
+  "rationale": "'event_name' is referenced in the function body but was never captured as a parameter -- only *args was declared. Adding it as the first positional parameter defines the name.",
+  "confidence": 0.8
+}

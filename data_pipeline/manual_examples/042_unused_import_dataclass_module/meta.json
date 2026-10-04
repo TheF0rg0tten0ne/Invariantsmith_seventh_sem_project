@@ -1,0 +1,4 @@
+{
+  "rationale": "'dataclass' is imported but Point is a plain hand-written class, not decorated with @dataclass. Removing the unused import is the minimal fix.",
+  "confidence": 0.9
+}

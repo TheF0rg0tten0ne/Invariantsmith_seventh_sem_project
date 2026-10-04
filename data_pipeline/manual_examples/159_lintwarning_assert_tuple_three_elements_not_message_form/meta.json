@@ -1,0 +1,4 @@
+{
+  "rationale": "'assert (a >= 0, b >= 0, c >= 0)' asserts a three-element tuple, which is always truthy no matter what a, b, and c are -- the assertion can never fail. Note this is different from the valid 'assert condition, \"message\"' syntax (no enclosing parentheses, and the second part is a string): here all three elements are non-negativity checks that were meant to all be enforced. Replacing it with an 'and' chain of all three resolves it.",
+  "confidence": 0.8
+}

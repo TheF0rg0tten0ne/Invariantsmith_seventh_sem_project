@@ -1,0 +1,4 @@
+{
+  "rationale": "The exception is bound to 'err' but never referenced in the except block. Dropping the 'as err' binding is the minimal fix.",
+  "confidence": 0.9
+}

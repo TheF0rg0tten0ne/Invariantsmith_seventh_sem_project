@@ -1,0 +1,4 @@
+{
+  "rationale": "'Settings' is first defined as a class, then immediately shadowed by a same-named function before the class is ever instantiated. The 'json' import is unrelated and already correctly used by the function -- removing just the dead class definition while leaving the import untouched is the minimal fix.",
+  "confidence": 0.85
+}

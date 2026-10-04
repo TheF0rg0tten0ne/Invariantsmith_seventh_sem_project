@@ -1,0 +1,4 @@
+{
+  "rationale": "The recursive call misspells the function's own name ('factoriel' vs 'factorial'), making it an undefined name at call time. Correcting the spelling resolves it.",
+  "confidence": 0.95
+}

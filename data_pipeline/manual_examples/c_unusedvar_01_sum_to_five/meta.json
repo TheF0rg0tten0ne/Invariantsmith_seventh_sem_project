@@ -1,0 +1,5 @@
+{
+  "language": "c",
+  "rationale": "'scratch' is declared but never read or written anywhere else in the function -- remove it.",
+  "confidence": 0.9
+}

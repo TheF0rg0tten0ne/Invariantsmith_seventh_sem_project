@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "'total' doesn't exist -- the method's real parameter is 'amount'.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

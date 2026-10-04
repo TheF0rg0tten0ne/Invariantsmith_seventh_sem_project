@@ -1,0 +1,4 @@
+{
+  "rationale": "The final return is indented to a level (6 spaces) that doesn't match any enclosing block's indentation (4 or 8), which Python rejects as an unindent that doesn't match any outer level. Aligning it with the function body's 4-space indentation fixes it.",
+  "confidence": 0.9
+}

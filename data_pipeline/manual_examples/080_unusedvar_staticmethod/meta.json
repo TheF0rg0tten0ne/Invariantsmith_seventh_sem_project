@@ -1,0 +1,4 @@
+{
+  "rationale": "'separator' is assigned but the actual join call hardcodes '/' directly instead of using the variable. Removing the dead assignment is the minimal fix.",
+  "confidence": 0.85
+}

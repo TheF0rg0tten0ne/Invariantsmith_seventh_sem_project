@@ -1,0 +1,4 @@
+{
+  "rationale": "'len(items) = 0' attempts to assign to a function call result, which is never a valid assignment target. There's no evident use for the computed length anywhere else in the function, so removing the invalid statement entirely (rather than inventing a use for an unused variable) is the minimal fix.",
+  "confidence": 0.6
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'__init__' is defined twice on Session; the first, simpler constructor is shadowed by the second and never runs. Removing the dead first definition resolves the redefinition.",
+  "confidence": 0.9
+}

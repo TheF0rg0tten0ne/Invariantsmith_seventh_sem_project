@@ -1,0 +1,1 @@
+{"rationale": "'OFFSET' is referenced but never defined anywhere. Defining it locally as 32 (the F-to-C offset) resolves the undefined name.", "confidence": 0.75}

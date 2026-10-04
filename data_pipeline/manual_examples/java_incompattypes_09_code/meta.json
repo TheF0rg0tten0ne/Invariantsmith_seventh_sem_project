@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "\"404\" is a String literal, not an int -- javac rejects the assignment. Use the int literal 404 instead.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'os.path' is imported but never referenced -- greet() doesn't touch the filesystem. Removing the unused dotted-submodule import is the minimal fix.",
+  "confidence": 0.9
+}

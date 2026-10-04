@@ -1,0 +1,4 @@
+{
+  "rationale": "The string is written as an f-string but has no '{...}' placeholder, so 'username' prints literally as the word 'username' instead of the parameter's value. Wrapping it in braces makes the interpolation actually happen.",
+  "confidence": 0.85
+}

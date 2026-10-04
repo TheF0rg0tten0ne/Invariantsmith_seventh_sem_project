@@ -1,0 +1,5 @@
+{
+  "language": "c",
+  "rationale": "'total' is already declared above; the second 'int total = ...' redeclares it in the same scope instead of just reassigning it.",
+  "confidence": 0.9
+}

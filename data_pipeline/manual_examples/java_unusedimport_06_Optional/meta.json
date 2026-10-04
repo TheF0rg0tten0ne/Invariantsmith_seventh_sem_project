@@ -1,0 +1,5 @@
+{
+  "language": "java",
+  "rationale": "'Optional' is imported but the code only ever uses 'HashMap', never 'Optional' -- drop the unused import.",
+  "confidence": 0.9
+}

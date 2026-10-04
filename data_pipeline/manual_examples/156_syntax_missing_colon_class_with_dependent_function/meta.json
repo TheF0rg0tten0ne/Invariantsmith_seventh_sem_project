@@ -1,0 +1,4 @@
+{
+  "rationale": "The Shape class definition is missing its trailing colon. describe() is unrelated to the syntax error and depends on Shape existing correctly -- fixing just the colon while leaving describe() completely untouched (not dropping it, not rewriting it) is the minimal fix.",
+  "confidence": 0.95
+}

@@ -1,0 +1,5 @@
+{
+  "language": "c",
+  "rationale": "'unused_flag' is declared but never read or written anywhere else in the function, so it's dead weight -- remove it.",
+  "confidence": 0.9
+}

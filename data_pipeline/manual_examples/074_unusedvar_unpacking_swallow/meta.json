@@ -1,0 +1,4 @@
+{
+  "rationale": "'rest' is unpacked but never used -- only 'first' is returned. Dropping the unused half of the tuple assignment (and the now-unnecessary conditional building it) is the minimal fix.",
+  "confidence": 0.75
+}

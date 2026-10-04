@@ -1,0 +1,4 @@
+{
+  "rationale": "'parsed' is computed with int(value) but never used -- the very next line calls int(value) again for the actual return. Removing the redundant, unused assignment is the minimal fix.",
+  "confidence": 0.85
+}

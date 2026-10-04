@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'main' is missing its opening '{' -- without it, gcc parses the body's statements (including the scanf/if/else block) as if they were file-scope declarations, which is what produces the cascade of 'expected declaration specifiers' errors. Adding the '{' resolves the whole cascade at once; nothing else in the file needs to change.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

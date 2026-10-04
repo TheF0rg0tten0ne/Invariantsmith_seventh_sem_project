@@ -1,0 +1,4 @@
+{
+  "rationale": "'app_route' is used as a decorator but never defined or imported anywhere in the file. Adding a minimal decorator factory that just tags the function with its route path defines the name without guessing at a larger framework's behavior.",
+  "confidence": 0.65
+}

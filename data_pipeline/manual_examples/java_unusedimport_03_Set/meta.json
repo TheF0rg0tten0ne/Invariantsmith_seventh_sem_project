@@ -1,0 +1,5 @@
+{
+  "language": "java",
+  "rationale": "'Set' is imported but the code only ever uses 'HashSet', never 'Set' -- drop the unused import.",
+  "confidence": 0.9
+}

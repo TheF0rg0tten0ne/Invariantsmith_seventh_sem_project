@@ -1,0 +1,4 @@
+{
+  "rationale": "'Enum' is imported but nothing in the file defines an Enum subclass. Removing the unused import is the minimal fix.",
+  "confidence": 0.9
+}

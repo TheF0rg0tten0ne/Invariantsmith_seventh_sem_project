@@ -1,0 +1,32 @@
+{
+  "name": "nord",
+  "label": "Invariantsmith Nord",
+  "colors": {
+    "background": "#2e3440",
+    "foreground": "#d8dee9",
+    "gutter": "#3b4252",
+    "selection": "#434c5e",
+    "cursor": "#eceff4",
+
+    "keyword": "#81a1c1",
+    "string": "#a3be8c",
+    "number": "#b48ead",
+    "comment": "#616e88",
+    "function": "#88c0d0",
+    "class": "#8fbcbb",
+    "variable": "#d8dee9",
+    "operator": "#81a1c1",
+
+    "error-underline": "#bf616a",
+    "warning-underline": "#ebcb8b",
+
+    "ai-suggestion-bg": "#2b3c3a",
+    "ai-suggestion-text": "#8fbcbb",
+    "ai-ghost-text": "#616e88",
+
+    "diff-add-bg": "#2c3a30",
+    "diff-add-text": "#a3be8c",
+    "diff-remove-bg": "#3a2c30",
+    "diff-remove-text": "#bf616a"
+  }
+}

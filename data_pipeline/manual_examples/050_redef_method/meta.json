@@ -1,0 +1,4 @@
+{
+  "rationale": "'parse' is defined twice in Parser; the second definition silently shadows the first, so the first is dead code. Removing the first (unused) definition and keeping the more complete second one resolves the redefinition.",
+  "confidence": 0.85
+}

@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'first' doesn't exist -- the function's real first parameter is 'a'.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

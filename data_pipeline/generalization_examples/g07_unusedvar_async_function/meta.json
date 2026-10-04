@@ -1,0 +1,4 @@
+{
+  "rationale": "'staged' is built from items inside this async function but never referenced -- the function returns len(items) directly. Removing the dead assignment is the minimal fix.",
+  "confidence": 0.9
+}

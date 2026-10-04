@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "'main' is missing its opening '{' -- javac parses the for-loop and the println calls that follow as class-body members instead of statements inside the method, producing a cascade of syntax errors. Adding the '{' resolves the whole cascade; the loop and its two println calls are unchanged.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

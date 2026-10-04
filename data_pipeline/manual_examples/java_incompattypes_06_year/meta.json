@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "\"2026\" is a String literal, not an int -- javac rejects the assignment. Use the int literal 2026 instead.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

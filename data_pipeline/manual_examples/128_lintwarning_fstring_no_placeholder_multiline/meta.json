@@ -1,0 +1,4 @@
+{
+  "rationale": "The f-string has no placeholder braces at all, so both 'name' and 'code' print as literal words instead of being interpolated. Adding the missing braces around both fixes the interpolation.",
+  "confidence": 0.8
+}

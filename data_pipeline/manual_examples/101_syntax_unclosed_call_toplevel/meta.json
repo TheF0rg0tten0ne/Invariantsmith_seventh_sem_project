@@ -1,0 +1,4 @@
+{
+  "rationale": "The call to len() is missing its closing parenthesis.",
+  "confidence": 0.95
+}

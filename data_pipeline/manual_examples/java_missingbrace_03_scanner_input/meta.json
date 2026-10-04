@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "'main' is missing its opening '{' -- javac parses the Scanner setup, input read, and if/else that follow as class-body members instead of statements, producing a cascade of syntax errors. Adding the '{' resolves the whole cascade; the Scanner usage and branch are unchanged.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

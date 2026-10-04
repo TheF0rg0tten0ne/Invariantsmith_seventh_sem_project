@@ -1,0 +1,5 @@
+{
+  "language": "java",
+  "rationale": "When n == 0 neither branch runs, so the method falls through without returning a value -- javac rejects this for a non-void method. Add an explicit fallback return.",
+  "confidence": 0.9
+}

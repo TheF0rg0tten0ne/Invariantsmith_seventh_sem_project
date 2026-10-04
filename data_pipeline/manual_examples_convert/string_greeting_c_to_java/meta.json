@@ -1,0 +1,3 @@
+{
+  "notes": "Python and Java both garbage-collect string concatenation; C needs an explicit heap allocation for the returned string, which the caller must free -- a real ownership decision Python/Java don't force on you."
+}

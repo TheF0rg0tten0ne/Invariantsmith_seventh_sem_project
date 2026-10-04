@@ -1,0 +1,5 @@
+{
+  "language": "c",
+  "rationale": "'id' is declared as int*, but 42 is an int literal, not an address -- point it at a real int's address instead.",
+  "confidence": 0.9
+}

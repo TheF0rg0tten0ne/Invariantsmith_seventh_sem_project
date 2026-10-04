@@ -1,0 +1,4 @@
+{
+  "rationale": "Of the three imports, only 'logging' is never referenced -- log_status() uses a plain print(), and threading/queue are both used in __init__. Removing just the unused 'logging' import while leaving threading and queue untouched is the minimal fix.",
+  "confidence": 0.9
+}

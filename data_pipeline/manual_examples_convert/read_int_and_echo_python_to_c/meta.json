@@ -1,0 +1,3 @@
+{
+  "notes": "Reading stdin has no shared idiom across these three: Python's input() returns a str that needs int(), C's scanf writes through a pointer and returns a status code the caller usually checks, and Java needs an explicit java.util.Scanner instance wrapping System.in -- System.in itself is a raw InputStream with no readLine()/nextInt() of its own, a mistake the un-fine-tuned model made on exactly this program."
+}

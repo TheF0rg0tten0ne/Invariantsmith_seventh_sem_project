@@ -1,0 +1,4 @@
+{
+  "rationale": "'defaultdict' is imported from collections but the function manually builds a plain dict instead of using it. Removing the unused import is the minimal fix.",
+  "confidence": 0.8
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'header' is defined twice; the first, plainer version is shadowed and unreachable. footer() and __init__() are already correct and unrelated to the redefinition. Removing just the dead first 'header' definition while leaving __init__() and footer() untouched is the minimal fix.",
+  "confidence": 0.9
+}

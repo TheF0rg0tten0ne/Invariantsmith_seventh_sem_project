@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "This body can throw the checked InterruptedException, which the method neither catches nor declares -- add 'throws InterruptedException' to the signature.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

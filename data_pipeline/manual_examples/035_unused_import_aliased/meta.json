@@ -1,0 +1,4 @@
+{
+  "rationale": "'numpy' is imported and aliased as 'np' but never used -- the function only uses plain list comprehension. Removing the unused aliased import is the minimal fix.",
+  "confidence": 0.95
+}

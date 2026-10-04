@@ -1,0 +1,4 @@
+{
+  "rationale": "'traceback' is imported but the except block never calls traceback.print_exc() or similar -- it just returns None. Removing the unused import is the minimal fix.",
+  "confidence": 0.9
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'textwrap' is imported but shout() just calls str.upper() directly. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

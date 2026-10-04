@@ -1,0 +1,4 @@
+{
+  "rationale": "The with statement is missing its trailing colon.",
+  "confidence": 0.97
+}

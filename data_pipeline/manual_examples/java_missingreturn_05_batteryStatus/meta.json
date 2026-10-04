@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "Not every path through 'batteryStatus' returns a value -- javac rejects a non-void method that can fall off the end. Add an explicit fallback return.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

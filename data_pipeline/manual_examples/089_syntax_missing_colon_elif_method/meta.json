@@ -1,0 +1,4 @@
+{
+  "rationale": "The elif clause inside this method is missing its trailing colon.",
+  "confidence": 0.97
+}

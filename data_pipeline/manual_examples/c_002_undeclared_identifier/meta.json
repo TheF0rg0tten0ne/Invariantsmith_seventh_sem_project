@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'result' was never declared or passed in; the function's actual parameter is 'n', which is what should be squared and returned.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

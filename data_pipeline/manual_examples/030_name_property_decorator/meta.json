@@ -1,0 +1,4 @@
+{
+  "rationale": "'PI' is used but never defined or imported. Using math.pi from the standard library is the precise, unambiguous fix rather than guessing at a hardcoded approximation.",
+  "confidence": 0.9
+}

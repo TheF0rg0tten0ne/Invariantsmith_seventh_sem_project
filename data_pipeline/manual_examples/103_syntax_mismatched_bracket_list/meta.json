@@ -1,0 +1,4 @@
+{
+  "rationale": "The list literal is opened with '[' but closed with ')' instead of ']'.",
+  "confidence": 0.9
+}

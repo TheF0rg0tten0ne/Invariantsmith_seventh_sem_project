@@ -1,0 +1,4 @@
+{
+  "rationale": "'assert (a, b, c, d)' asserts a four-element tuple, which is always truthy regardless of the four values -- the assertion can never fail. Replacing it with a proper 'and' chain of all four conditions makes the assertion actually check each one, the same fix pattern as for a two- or three-element tuple, just extended to however many conditions are present.",
+  "confidence": 0.85
+}

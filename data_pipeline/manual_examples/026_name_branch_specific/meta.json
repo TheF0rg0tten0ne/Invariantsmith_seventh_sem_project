@@ -1,0 +1,5 @@
+{
+  "rationale": "The f-string referenced 'label_default', an undefined name, instead of the 'label' variable actually being built by the if/elif chain. Adding the missing else branch (so label is always assigned) and fixing the f-string to reference 'label' resolves the undefined name and a latent unbound-variable bug at the same time.",
+  "confidence": 0.75,
+  "target_error_index": 1
+}

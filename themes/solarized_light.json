@@ -1,0 +1,32 @@
+{
+  "name": "solarized_light",
+  "label": "Invariantsmith Solarized Light",
+  "colors": {
+    "background": "#fdf6e3",
+    "foreground": "#657b83",
+    "gutter": "#eee8d5",
+    "selection": "#d3d0c3",
+    "cursor": "#586e75",
+
+    "keyword": "#859900",
+    "string": "#2aa198",
+    "number": "#d33682",
+    "comment": "#93a1a1",
+    "function": "#268bd2",
+    "class": "#b58900",
+    "variable": "#cb4b16",
+    "operator": "#657b83",
+
+    "error-underline": "#dc322f",
+    "warning-underline": "#b58900",
+
+    "ai-suggestion-bg": "#e7ecd6",
+    "ai-suggestion-text": "#268b46",
+    "ai-ghost-text": "#93a1a1",
+
+    "diff-add-bg": "#e7f2d6",
+    "diff-add-text": "#587a00",
+    "diff-remove-bg": "#f2e0d6",
+    "diff-remove-text": "#dc322f"
+  }
+}

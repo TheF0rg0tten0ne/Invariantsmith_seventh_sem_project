@@ -1,0 +1,32 @@
+{
+  "name": "solarized",
+  "label": "Invariantsmith Solarized",
+  "colors": {
+    "background": "#002b36",
+    "foreground": "#839496",
+    "gutter": "#073642",
+    "selection": "#274642",
+    "cursor": "#93a1a1",
+
+    "keyword": "#859900",
+    "string": "#2aa198",
+    "number": "#d33682",
+    "comment": "#586e75",
+    "function": "#268bd2",
+    "class": "#b58900",
+    "variable": "#cb4b16",
+    "operator": "#839496",
+
+    "error-underline": "#dc322f",
+    "warning-underline": "#b58900",
+
+    "ai-suggestion-bg": "#0a3a3a",
+    "ai-suggestion-text": "#2aa198",
+    "ai-ghost-text": "#586e75",
+
+    "diff-add-bg": "#0a3a2a",
+    "diff-add-text": "#859900",
+    "diff-remove-bg": "#3a0f0f",
+    "diff-remove-text": "#dc322f"
+  }
+}

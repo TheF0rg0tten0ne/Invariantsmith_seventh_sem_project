@@ -1,0 +1,4 @@
+{
+  "rationale": "'RawConfig' is used as a type hint but never defined or imported. Since parse_config immediately does dict(raw), aliasing RawConfig to the builtin dict type is a reasonable minimal definition that matches actual usage.",
+  "confidence": 0.6
+}

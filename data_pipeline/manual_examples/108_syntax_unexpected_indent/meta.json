@@ -1,0 +1,4 @@
+{
+  "rationale": "The line 'z = y * 2' is indented one level deeper than the surrounding statements with no block-opening line (if/for/def/etc.) to justify it, producing an unexpected-indent error. Aligning it with the sibling statements fixes it.",
+  "confidence": 0.9
+}

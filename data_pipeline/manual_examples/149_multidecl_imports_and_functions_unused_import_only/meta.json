@@ -1,0 +1,4 @@
+{
+  "rationale": "Of the two imports, only 'zlib' is never referenced by any of the three functions -- 'base64' is used in both encode() and decode(). Removing just the unused 'zlib' import while leaving base64 and all three functions completely untouched is the minimal fix.",
+  "confidence": 0.9
+}

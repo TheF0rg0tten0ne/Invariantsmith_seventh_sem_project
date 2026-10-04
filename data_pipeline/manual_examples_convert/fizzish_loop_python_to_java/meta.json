@@ -1,0 +1,3 @@
+{
+  "notes": "Python's range(1, 11) is an exclusive upper bound, so it becomes the inclusive condition i <= 10 in C/Java's counted for-loop."
+}

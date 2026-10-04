@@ -1,0 +1,6 @@
+{
+  "rationale": "The variable 'tax' is never defined inside calculate_total, so it's undefined at the return statement. Adding it as a keyword argument with a default of 0 defines it and keeps existing call sites working.",
+  "confidence": 0.95,
+  "filename": "buffer.py",
+  "target_error_index": 0
+}

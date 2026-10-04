@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'number' doesn't exist -- the function's real parameter is 'n'.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

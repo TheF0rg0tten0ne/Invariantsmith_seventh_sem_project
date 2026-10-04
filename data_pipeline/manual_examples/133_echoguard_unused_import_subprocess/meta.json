@@ -1,0 +1,4 @@
+{
+  "rationale": "'subprocess' is imported but greeting() just formats a string, never shells out. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

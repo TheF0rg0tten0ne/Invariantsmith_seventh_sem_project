@@ -1,0 +1,5 @@
+{
+  "language": "c",
+  "rationale": "'level' is a parameter that's never read in the function body -- use it, or the caller's intent is silently dropped.",
+  "confidence": 0.9
+}

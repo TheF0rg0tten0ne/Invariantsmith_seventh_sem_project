@@ -1,0 +1,4 @@
+{
+  "rationale": "Only sign_label() has a problem: 'zero_label' is referenced but never defined anywhere in the file. The other four functions are already correct. Replacing the undefined name with the literal string 'zero', consistent with the sibling branches' style of returning plain string literals, while leaving is_positive(), is_negative(), is_zero(), and clamp_sign() untouched, is the minimal fix.",
+  "confidence": 0.85
+}

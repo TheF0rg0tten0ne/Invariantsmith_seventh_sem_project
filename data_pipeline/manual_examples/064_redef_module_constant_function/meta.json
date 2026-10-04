@@ -1,0 +1,4 @@
+{
+  "rationale": "'DEFAULT_FACTORY' is defined twice at module level; the first is shadowed and unreachable. Removing the dead first definition resolves the redefinition.",
+  "confidence": 0.85
+}

@@ -1,0 +1,5 @@
+{
+  "language": "java",
+  "rationale": "'Stream' is imported but the code only ever uses 'ArrayList', never 'Stream' -- drop the unused import.",
+  "confidence": 0.9
+}

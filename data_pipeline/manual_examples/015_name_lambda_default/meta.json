@@ -1,0 +1,4 @@
+{
+  "rationale": "'scale_factor' is used inside the lambda but never defined in any enclosing scope. Promoting it to a parameter of make_multiplier (with a neutral default of 1) defines it and lets callers override it.",
+  "confidence": 0.8
+}

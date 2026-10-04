@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'main' is missing its opening '{' -- gcc parses the scanf/for-loop body as file-scope declarations instead of statements inside main, producing a cascade of syntax errors. Adding the '{' resolves the whole cascade; the loop, the nested scanf calls, and the final printf's two format specifiers are unchanged.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

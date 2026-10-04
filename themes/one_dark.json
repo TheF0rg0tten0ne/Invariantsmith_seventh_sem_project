@@ -1,0 +1,32 @@
+{
+  "name": "one_dark",
+  "label": "Invariantsmith One Dark",
+  "colors": {
+    "background": "#282c34",
+    "foreground": "#abb2bf",
+    "gutter": "#2c313a",
+    "selection": "#3e4451",
+    "cursor": "#528bff",
+
+    "keyword": "#c678dd",
+    "string": "#98c379",
+    "number": "#d19a66",
+    "comment": "#5c6370",
+    "function": "#61afef",
+    "class": "#e5c07b",
+    "variable": "#e06c75",
+    "operator": "#56b6c2",
+
+    "error-underline": "#e06c75",
+    "warning-underline": "#e5c07b",
+
+    "ai-suggestion-bg": "#1f3327",
+    "ai-suggestion-text": "#98c379",
+    "ai-ghost-text": "#5c6370",
+
+    "diff-add-bg": "#233329",
+    "diff-add-text": "#98c379",
+    "diff-remove-bg": "#332329",
+    "diff-remove-text": "#e06c75"
+  }
+}

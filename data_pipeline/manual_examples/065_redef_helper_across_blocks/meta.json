@@ -1,0 +1,4 @@
+{
+  "rationale": "'run' is defined twice inside build_pipeline -- once unconditionally and once inside an 'if not steps' branch pyflakes treats as a plain redefinition in the same scope. Removing the conditional redefinition (the outer 'run' already handles an empty steps list correctly, since the for-loop over an empty list is a no-op) resolves it with the smallest change.",
+  "confidence": 0.6
+}

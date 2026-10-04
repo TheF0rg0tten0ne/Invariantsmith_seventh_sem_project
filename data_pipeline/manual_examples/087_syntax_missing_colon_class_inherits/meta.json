@@ -1,0 +1,4 @@
+{
+  "rationale": "The class definition (with a base class in parentheses) is missing its trailing colon.",
+  "confidence": 0.97
+}

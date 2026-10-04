@@ -1,0 +1,4 @@
+{
+  "rationale": "'base_value' is referenced inside the nested Inner class's method but never defined anywhere, and nested classes don't implicitly see names from an enclosing class body. Replacing it with the literal 1 (a neutral base) resolves the undefined name.",
+  "confidence": 0.5
+}

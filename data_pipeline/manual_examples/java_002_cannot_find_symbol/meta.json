@@ -1,0 +1,6 @@
+{
+  "language": "java",
+  "rationale": "'result' doesn't exist -- the method's real parameter is 'n', which is what should be squared and returned.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

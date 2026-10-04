@@ -1,0 +1,4 @@
+{
+  "rationale": "'List' is imported from typing but the function's actual annotations use the builtin lowercase 'list', not the typing generic. Removing the unused import is the minimal fix.",
+  "confidence": 0.85
+}

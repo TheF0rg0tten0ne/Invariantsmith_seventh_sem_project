@@ -1,0 +1,4 @@
+{
+  "rationale": "'pandas' is imported and aliased as pd but is_even() doesn't touch any dataframe. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

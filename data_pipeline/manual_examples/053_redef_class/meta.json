@@ -1,0 +1,4 @@
+{
+  "rationale": "'Config' is defined twice; the first class body is entirely shadowed and unreachable. Removing the first (dead) definition and keeping the second, more complete one resolves the redefinition.",
+  "confidence": 0.85
+}

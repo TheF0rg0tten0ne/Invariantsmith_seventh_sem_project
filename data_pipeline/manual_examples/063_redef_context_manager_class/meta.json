@@ -1,0 +1,4 @@
+{
+  "rationale": "'__enter__' is defined twice on Timer; the first, empty version is shadowed by the second before any 'with Timer():' block could invoke it. Removing the dead first definition resolves the redefinition.",
+  "confidence": 0.85
+}

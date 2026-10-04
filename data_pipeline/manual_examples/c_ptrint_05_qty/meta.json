@@ -1,0 +1,5 @@
+{
+  "language": "c",
+  "rationale": "'qty' is declared as int*, but 7 is an int literal, not an address -- point it at a real int's address instead.",
+  "confidence": 0.9
+}

@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'temp' doesn't exist -- the function's real parameter is 'c'.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

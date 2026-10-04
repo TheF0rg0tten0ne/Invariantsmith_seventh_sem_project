@@ -1,0 +1,4 @@
+{
+  "rationale": "'datetime' is imported from the stdlib module but never referenced in the file. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

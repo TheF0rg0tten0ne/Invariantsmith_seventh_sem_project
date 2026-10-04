@@ -1,0 +1,4 @@
+{
+  "rationale": "fetch_many() is missing its trailing colon. fetch_one() is unrelated to the syntax error and is exactly the helper fetch_many() depends on via await -- fixing just the colon while leaving fetch_one() completely untouched (not dropping it, not rewriting it) is the minimal fix.",
+  "confidence": 0.95
+}

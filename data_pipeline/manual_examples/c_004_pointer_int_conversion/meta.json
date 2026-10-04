@@ -1,0 +1,5 @@
+{
+  "language": "c",
+  "rationale": "'count' is declared as int*, but 5 is an int literal, not an address -- initializing a pointer with a bare integer makes it point at whatever memory address 5 happens to be. Point it at a real int's address instead.",
+  "confidence": 0.9
+}

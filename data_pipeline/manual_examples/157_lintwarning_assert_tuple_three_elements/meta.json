@@ -1,0 +1,4 @@
+{
+  "rationale": "'assert (x > 0, y > 0, z > 0)' asserts a three-element tuple, which is always truthy regardless of x, y, and z's actual values -- the assertion can never fail. This is NOT the 'assert condition, message' form (that has no parentheses around both parts); all three elements here are meant to be checked, not the last one used as a message. Replacing it with a proper 'and' chain of all three conditions makes the assertion actually check what was intended.",
+  "confidence": 0.85
+}

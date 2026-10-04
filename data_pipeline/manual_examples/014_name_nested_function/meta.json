@@ -1,0 +1,4 @@
+{
+  "rationale": "The generator expression iterates over 'rowset', which is never defined anywhere -- the actual parameter is named 'rows'. Correcting the typo resolves the undefined name.",
+  "confidence": 0.8
+}

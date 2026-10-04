@@ -1,0 +1,6 @@
+{
+  "language": "c",
+  "rationale": "'log_event' is missing its opening '{' -- without it, gcc parses the body's statements as if they were file-scope declarations, which is what produces the cascade of 'expected declaration specifiers' errors on every line after it, not just the first one. Adding the '{' (and the matching closing '}' this function already had) resolves the whole cascade at once.",
+  "confidence": 0.9,
+  "target_error_index": 0
+}

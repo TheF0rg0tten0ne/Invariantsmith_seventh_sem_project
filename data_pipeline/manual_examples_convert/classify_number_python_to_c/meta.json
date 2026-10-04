@@ -1,0 +1,3 @@
+{
+  "notes": "Python's str return type maps to const char* in C (a string literal, so no allocation/freeing needed) and to String in Java."
+}

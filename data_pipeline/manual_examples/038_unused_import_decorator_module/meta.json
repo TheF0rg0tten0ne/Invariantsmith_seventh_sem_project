@@ -1,0 +1,4 @@
+{
+  "rationale": "'functools' is imported but nothing in the file uses it (no @functools.wraps, @lru_cache, etc.). Removing the unused import is the minimal fix.",
+  "confidence": 0.9
+}

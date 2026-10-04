@@ -1,0 +1,4 @@
+{
+  "rationale": "'json' is imported but square() never uses it. Removing the unused import is the minimal fix.",
+  "confidence": 0.95
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'string' is imported but text.title() is a plain str method -- nothing from the 'string' module (like string.capwords) is used. Removing the unused import is the minimal fix.",
+  "confidence": 0.9
+}

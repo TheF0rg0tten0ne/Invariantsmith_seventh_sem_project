@@ -1,0 +1,4 @@
+{
+  "rationale": "The file opened by the with-statement is bound to 'f' but never referenced -- the function reopens the path directly instead. Dropping the 'as f' binding is the minimal fix.",
+  "confidence": 0.85
+}

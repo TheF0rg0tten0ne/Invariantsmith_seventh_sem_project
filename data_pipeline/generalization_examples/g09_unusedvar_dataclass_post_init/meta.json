@@ -1,0 +1,4 @@
+{
+  "rationale": "'row_count' is computed in __init__ but never used -- self.summary recomputes len(rows) directly instead of referencing it. Removing the dead assignment is the minimal fix.",
+  "confidence": 0.85
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "The for-else clause is missing its trailing colon.",
+  "confidence": 0.95
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'handle_error' is defined twice at module scope; the first definition is shadowed before it can ever be called. Removing the dead first definition resolves the redefinition.",
+  "confidence": 0.85
+}

@@ -1,0 +1,4 @@
+{
+  "rationale": "'default_max_attempts' is referenced at class-body scope but never defined anywhere. Replacing it with a literal default of 3 (a common retry count) resolves the undefined name.",
+  "confidence": 0.6
+}

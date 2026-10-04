@@ -1,0 +1,5 @@
+{
+  "rationale": "'contents' inside the with-block is undefined -- the file object was actually bound to 'handle' by the with-statement. Referencing 'handle' instead resolves the undefined name.",
+  "confidence": 0.9,
+  "target_error_index": 1
+}
