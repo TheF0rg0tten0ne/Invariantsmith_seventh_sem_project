@@ -230,7 +230,13 @@ def _normalize_message(message: str) -> str:
     failure mode -- consistent with confidence only ever being adjusted
     down, never up, when verification is uncertain.
     """
-    return re.sub(r"'[^']*'", "'<X>'", message)
+    # gcc puts the argument position in the text ("argument 2 has type ..."),
+    # which differs between two otherwise identical warnings on different
+    # lines. gcc's curly-quoted tokens (\u2018%f\u2019, \u2018int\u2019) are deliberately
+    # NOT collapsed: they carry the actual diagnosis, and collapsing them would
+    # make unrelated format warnings indistinguishable from each other.
+    message = re.sub(r"'[^']*'", "'<X>'", message)
+    return re.sub(r"\bargument \d+\b", "argument N", message)
 
 
 _STILL_PRESENT_NOTE = "Verification failed: the originally reported error is still present"
@@ -257,10 +263,21 @@ def _verify_fix(original_code: str, candidate: str, error_type: str, error_messa
         )
 
     normalized_original = _normalize_message(error_message)
-    original_still_present = any(
-        e.message == error_message or _normalize_message(e.message) == normalized_original
-        for e in errors_after
-    )
+    errors_before = error_detector.analyze(original_code, filename, language)
+
+    def _matches_original(e) -> bool:
+        return e.message == error_message or _normalize_message(e.message) == normalized_original
+
+    # Compare OCCURRENCE COUNTS, not mere presence. A file can legitimately
+    # contain the same diagnostic several times (e.g. two printf("%f", <int>)
+    # calls give byte-identical gcc messages on different lines). Fixing one
+    # of them leaves the other behind; checking "does any identical message
+    # still exist" then reports the fix as having done nothing, so a correct
+    # fix is rejected with confidence 0.0. The fix worked if the number of
+    # matching diagnostics went DOWN.
+    count_before = sum(1 for e in errors_before if _matches_original(e))
+    count_after = sum(1 for e in errors_after if _matches_original(e))
+    original_still_present = count_after >= max(count_before, 1)
 
     if original_still_present:
         return 0.0, False, _STILL_PRESENT_NOTE + " after applying this fix."
@@ -280,7 +297,6 @@ def _verify_fix(original_code: str, candidate: str, error_type: str, error_messa
     # introduce them. Treating those warnings as blocking causes correct C
     # and Java fixes to be incorrectly rejected. New lint warnings are
     # surfaced via the other_new_errors path below (partial-verified, 0.5).
-    errors_before = error_detector.analyze(original_code, filename, language)
     pre_existing = {_normalize_message(e.message) for e in errors_before}
     new_errors = [
         e for e in errors_after
@@ -739,14 +755,74 @@ _BARE_PERCENT_ARG = re.compile(
     r"^%\s*([A-Za-z_]\w*(?:\s*(?:\[[^\[\]]*\]|->\s*\w+|\.\s*\w+))*)$"
 )
 
+# A plain scalar lvalue with nothing else on it: no '&' already, no array
+# index, no member access, no cast, no function call. Deliberately narrow --
+# the goal is to catch the unambiguous case (`sscanf(text, "%d", value);`
+# with a bare `int value`), not to reason about arrays/pointers/expressions,
+# which `repair_scanf_address_of` leaves alone rather than guess at.
+_BARE_IDENTIFIER_ARG = re.compile(r"^[A-Za-z_]\w*$")
+
+# A single scanf-family conversion spec: optional '*' (assignment
+# suppression -- consumes no argument), optional field width, optional
+# length modifier, then the conversion itself (a scanset "[...]" or a
+# single letter). Good enough for real-world format strings; not a full
+# printf/scanf grammar.
+_SCANF_FMT_SPEC_RE = re.compile(
+    r"%(?P<suppress>\*)?\d*(?:hh|h|ll|l|L|j|z|t)?(?P<conv>\[[^\]]*\]|[diouxXeEfFgGaAcspn])"
+)
+
+
+def _scanf_format_consumers(fmt_arg_text: str) -> Optional[list[bool]]:
+    """Parse a scanf-family call's format-string argument into an ordered
+    list of `needs_amp` flags, one entry per argument the format string
+    actually consumes (a '*' assignment-suppression conversion consumes no
+    argument and is skipped, matching real scanf semantics).
+
+    '%s' and a scanset '%[...]' write through a buffer the caller already
+    passes as a pointer (a char array or a char*) -- those must NEVER get
+    '&' added, or a correct `scanf("%s", buf)` becomes a broken
+    `scanf("%s", &buf)`. Every other conversion (%d, %i, %u, %o, %x/%X,
+    %e/%f/%g/%a, %c, %p, %n) writes through a scalar lvalue and needs its
+    address taken.
+
+    Returns None -- "don't guess" -- if the argument isn't a single, plain
+    quoted literal (e.g. two adjacent string literals concatenated, or no
+    quotes at all), since splitting that correctly isn't worth the risk of
+    misreading the conversions.
+    """
+    if fmt_arg_text.count('"') != 2:
+        return None
+    first_q = fmt_arg_text.find('"')
+    last_q = fmt_arg_text.rfind('"')
+    literal = fmt_arg_text[first_q + 1:last_q].replace("%%", "\x00")
+    consumers = []
+    for m in _SCANF_FMT_SPEC_RE.finditer(literal):
+        if m.group("suppress"):
+            continue
+        conv = m.group("conv")
+        consumers.append(not (conv == "s" or conv.startswith("[")))
+    return consumers
+
 
 def repair_scanf_address_of(code: str) -> str:
-    """Deterministic repair for the classic C beginner typo of writing
-    'scanf("%d", %n)' instead of 'scanf("%d", &n)' -- a stray '%' where an
-    '&' (address-of) was meant. Only touches arguments that come AFTER the
-    call's format string and look like a bare '%identifier' (optionally with
-    array/member access); never touches the format string itself, so a
-    genuine '%n' format specifier inside the quoted string is untouched.
+    """Deterministic repair for the two classic C beginner mistakes around
+    scanf-family address-of arguments:
+
+    1. A stray '%' where an '&' was meant -- 'scanf("%d", %n)' instead of
+       'scanf("%d", &n)'.
+    2. The '&' simply missing altogether -- 'sscanf(text, "%d", value);'
+       with a bare scalar `value` instead of `&value`. Detected by lining
+       up each format-string conversion with its argument and checking
+       whether a conversion that needs an address (anything but %s / %[)
+       was given a bare identifier with no '&', array index, or member
+       access on it.
+
+    Only touches arguments that come after the call's format string; never
+    touches the format string itself, so a genuine '%n' conversion inside
+    the quoted string is untouched. Case 2 only fires when the format
+    string's conversions and the call's trailing arguments line up 1:1 --
+    if they don't (a vararg mismatch, an unparseable/concatenated format
+    literal), it's left alone rather than guessed at.
     """
     out = code
     search_from = 0
@@ -769,15 +845,22 @@ def repair_scanf_address_of(code: str) -> str:
         if fmt_idx is None:
             search_from = close_idx + 1
             continue
+        trailing = args[fmt_idx + 1:]
+        consumers = _scanf_format_consumers(args[fmt_idx])
+        amp_eligible = consumers is not None and len(consumers) == len(trailing)
         changed = False
         new_args = list(args)
         for i in range(fmt_idx + 1, len(args)):
             stripped = args[i].strip()
+            leading_ws = args[i][:len(args[i]) - len(args[i].lstrip())]
+            trailing_ws = args[i][len(args[i].rstrip()):]
             bm = _BARE_PERCENT_ARG.match(stripped)
             if bm:
-                leading_ws = args[i][:len(args[i]) - len(args[i].lstrip())]
-                trailing_ws = args[i][len(args[i].rstrip()):]
                 new_args[i] = f"{leading_ws}&{bm.group(1)}{trailing_ws}"
+                changed = True
+            elif (amp_eligible and consumers[i - fmt_idx - 1]
+                  and _BARE_IDENTIFIER_ARG.match(stripped)):
+                new_args[i] = f"{leading_ws}&{stripped}{trailing_ws}"
                 changed = True
         if changed:
             out = out[:open_idx + 1] + ",".join(new_args) + out[close_idx:]
@@ -793,14 +876,18 @@ def repair_scanf_address_of(code: str) -> str:
 def _try_scanf_address_of_typo(code: str, error_type: str, error_message: str,
                                 filename: str, language: str,
                                 line: Optional[int]) -> Optional[FixResult]:
-    """Deterministic repair for 'scanf("%d", %n)' (stray '%' meant to be
-    '&'). This is the single most common first-week-of-C typo and is
-    completely unambiguous once a scanf-family call is located, so it's
-    handled directly instead of asking the model -- which, for small local
-    models, tends to also throw in unrelated, unrequested 'improvements'
-    (e.g. rewriting 'int main()' to 'int main(void)') on top of the real
-    fix. Runs before the model, and the candidate still goes through
-    _verify_fix() like any other fix."""
+    """Deterministic repair for scanf-family address-of mistakes: a stray
+    '%' meant to be '&' ('scanf("%d", %n)'), and '&' missing altogether on a
+    bare scalar ('sscanf(text, "%d", value);'). Both are the single most
+    common first-week-of-C typo and are unambiguous once a scanf-family call
+    is located (see repair_scanf_address_of's docstring for how each case is
+    detected), so they're handled directly instead of asking the model --
+    which, for small local models, tends to also throw in unrelated,
+    unrequested 'improvements' (e.g. rewriting 'int main()' to
+    'int main(void)') on top of the real fix, or on a scoped/chunked request
+    for a short, surgical fix like this one, can fail to produce anything
+    usable at all. Runs before the model, and the candidate still goes
+    through _verify_fix() like any other fix."""
     if language != "c":
         return None
     if not _SCANF_CALL_START.search(code):
@@ -814,11 +901,150 @@ def _try_scanf_address_of_typo(code: str, error_type: str, error_message: str,
     return FixResult(
         diff=make_diff(code, cand, filename), confidence=min(0.95, ceiling),
         verified=True, raw_model_output="",
-        summary="A scanf() argument used '%' where '&' (address-of) was meant; it was corrected.",
+        summary="A scanf() argument was missing (or used '%' instead of) '&' (address-of); it was corrected.",
         checks=[{"status": "info", "text": "Deterministic repair -- no model call needed"},
                 {"status": "pass", "text": note}],
         rationale=("[Invariantsmith: deterministic repair -- 'scanf' needs the address of "
-                   f"each variable (&name), not '%name'.] [{note}]"),
+                   f"each scalar variable (&name).] [{note}]"),
+    )
+
+
+_IF_WHILE_COND_START = re.compile(r"\b(?:if|while)\s*\(")
+
+_ASSIGNABLE_LHS_RE = re.compile(
+    r"^(?:\*\s*)*[A-Za-z_]\w*(?:\s*(?:\.\s*\w+|->\s*\w+|\[[^\[\]]*\]))*\s*$"
+)
+
+
+def _find_top_level_bogus_assignment(expr: str) -> Optional[int]:
+    """Scan an if/while condition's full text for a single, unambiguous
+    assignment used as the condition's own top-level truth test -- the
+    'if (x = y)' typo for 'if (x == y)'.
+
+    Returns the index of that '=' within `expr`, or None when:
+    - there's no bare '=' at nesting depth 0 (inside a string/char literal
+      or inside any (), [], {} -- including an already-present extra pair
+      of parens, which is exactly how this typo is silenced without
+      changing its meaning, so such code is correctly left alone), or
+    - what looks like '=' is actually '==', '!=', '<=', '>=', or part of a
+      compound-assignment operator (+=, -=, *=, /=, %=, &=, |=, ^=, <<=,
+      >>=), or
+    - the condition also has a top-level '&&'/'||' (the assignment isn't
+      the WHOLE condition, so rewriting '=' to '==' could silently change
+      the meaning of a deliberate `if (result = f() && g())`-style
+      expression instead of fixing a typo -- left for the model/a human), or
+    - there's more than one bare top-level '=' (chained assignment --
+      genuinely ambiguous which comparison was meant, so left alone).
+    """
+    depth = 0
+    in_str: Optional[str] = None
+    found = None
+    i, n = 0, len(expr)
+    while i < n:
+        c = expr[i]
+        if in_str:
+            if c == "\\" and i + 1 < n:
+                i += 2
+                continue
+            if c == in_str:
+                in_str = None
+            i += 1
+            continue
+        if c in ("'", '"'):
+            in_str = c
+            i += 1
+            continue
+        if c in "([{":
+            depth += 1
+            i += 1
+            continue
+        if c in ")]}":
+            depth -= 1
+            i += 1
+            continue
+        if depth == 0:
+            if expr[i:i + 2] in ("&&", "||"):
+                return None
+            if c == "=":
+                nxt = expr[i + 1] if i + 1 < n else ""
+                prev = expr[i - 1] if i > 0 else ""
+                if nxt == "=":
+                    i += 2
+                    continue  # '==' -- a real comparison, not the typo
+                if prev in ("!", "<", ">", "+", "-", "*", "/", "%", "&", "|", "^"):
+                    i += 1
+                    continue  # relational or compound-assign -- not this
+                if found is not None:
+                    return None  # chained '=' -- ambiguous, don't guess
+                found = i
+        i += 1
+    return found
+
+
+def repair_assignment_in_condition(code: str) -> str:
+    """Deterministic repair for the classic C beginner typo 'if (x = y)'
+    (or 'while (x = y)') meant as 'if (x == y)': assignment used directly
+    as a boolean condition instead of comparison. Only touches a condition
+    that is a single flat assignment to a simple lvalue (identifier,
+    optionally with a pointer deref, member/arrow access, or array index) --
+    see `_find_top_level_bogus_assignment` for exactly what's excluded.
+    `for (...)` loop headers are intentionally not touched: their first
+    clause is conventionally an assignment (`for (i = 0; ...)`) and this
+    function only looks at `if`/`while`.
+    """
+    out = code
+    search_from = 0
+    while True:
+        m = _IF_WHILE_COND_START.search(out, search_from)
+        if not m:
+            break
+        open_idx = m.end() - 1
+        close_idx = _find_matching_paren(out, open_idx)
+        if close_idx is None:
+            break
+        content = out[open_idx + 1:close_idx]
+        idx = _find_top_level_bogus_assignment(content)
+        if idx is not None and _ASSIGNABLE_LHS_RE.match(content[:idx]):
+            abs_pos = open_idx + 1 + idx
+            out = out[:abs_pos + 1] + "=" + out[abs_pos + 1:]
+            search_from = abs_pos + 2  # past the newly-doubled '=='
+            continue
+        search_from = close_idx + 1
+    return out
+
+
+def _try_assignment_in_condition_typo(code: str, error_type: str, error_message: str,
+                                       filename: str, language: str,
+                                       line: Optional[int]) -> Optional[FixResult]:
+    """Deterministic repair for gcc's -Wparentheses 'suggest parentheses
+    around assignment used as truth value': the classic 'if (x = y)' typo
+    for 'if (x == y)'. As unambiguous as the scanf address-of typo once
+    the condition is a single flat assignment (see
+    repair_assignment_in_condition) -- handled directly instead of asking
+    the model, which can (as observed) return the broken line back
+    completely unchanged and still report high confidence, since nothing
+    about its own output tells it the fix didn't actually fix anything.
+    Runs before the model, and the candidate still goes through
+    _verify_fix() like any other fix."""
+    if language != "c":
+        return None
+    if "assignment used as truth value" not in error_message:
+        return None
+    cand = repair_assignment_in_condition(code)
+    if cand == code:
+        return None
+    ceiling, verified, note = _verify_fix(code, cand, error_type, error_message, filename, language)
+    if not verified:
+        return None
+    return FixResult(
+        diff=make_diff(code, cand, filename), confidence=min(0.95, ceiling),
+        verified=True, raw_model_output="",
+        summary="An '=' (assignment) used as a condition was corrected to '==' (comparison).",
+        checks=[{"status": "info", "text": "Deterministic repair -- no model call needed"},
+                {"status": "pass", "text": note}],
+        rationale=("[Invariantsmith: deterministic repair -- '=' assigns (and the "
+                   "condition then tests the assigned value), '==' compares; this "
+                   f"condition was rewritten to compare instead of assign.] [{note}]"),
     )
 
 
@@ -859,6 +1085,430 @@ def _try_missing_open_brace(code: str, error_type: str, error_message: str,
     return None
 
 
+# ---------------------------------------------------------------------
+# C: printf("%f", <int>)  -- fix the ROOT CAUSE, not just the symptom
+# ---------------------------------------------------------------------
+# gcc's "format '%f' expects argument of type 'double', but argument N has
+# type 'int'" is almost never a formatting typo. In real code it means a
+# value that was meant to be fractional (an average, a ratio) is computed
+# with integer arithmetic: `int avg(...) { return total / count; }`. Casting
+# at the printf call silences gcc but keeps printing 29.00 for 29.2. So when
+# the evidence is there (an int-returning function whose return does a
+# top-level division), widen the function to double with a (double) numerator
+# and widen the variable the result lands in. Everything else falls back to a
+# plain (double) cast on exactly the argument gcc complained about.
+
+_PRINTF_CALL_START = re.compile(r"\b(printf|fprintf)\s*\(")
+_PRINTF_SPEC_RE = re.compile(
+    r"%(?P<flags>[-+ #0]*)(?P<width>\*|\d+)?(?:\.(?P<prec>\*|\d+))?"
+    r"(?P<len>hh|h|ll|l|L|j|z|t)?(?P<conv>[diouxXeEfFgGaAcspn])"
+)
+_FLOAT_CONVS = set("fFeEgGaA")
+_C_FUNC_DEF_RE = re.compile(
+    r"^(?P<ret>[A-Za-z_][\w \t\*]*?)\b(?P<name>[A-Za-z_]\w*)[ \t]*\((?P<params>[^;{}()]*)\)[ \t\r]*\n?[ \t\r]*\{",
+    re.MULTILINE,
+)
+_C_NOT_FUNCS = {"if", "for", "while", "switch", "return", "sizeof", "else", "do"}
+_FLOAT_FMT_MSG_RE = re.compile(
+    r"expects argument of type [\u2018']double[\u2019'], but argument (\d+) has type [\u2018']int[\u2019']"
+)
+
+
+def _find_matching_brace(code: str, open_idx: int) -> Optional[int]:
+    """Index of the '}' matching the '{' at open_idx; skips strings, char
+    literals and // and /* */ comments."""
+    depth, i, n = 0, open_idx, len(code)
+    in_str: Optional[str] = None
+    while i < n:
+        c = code[i]
+        if in_str:
+            if c == "\\":
+                i += 2
+                continue
+            if c == in_str:
+                in_str = None
+        elif c in ("'", '"'):
+            in_str = c
+        elif c == "/" and code.startswith("//", i):
+            nl = code.find("\n", i)
+            if nl == -1:
+                return None
+            i = nl
+            continue
+        elif c == "/" and code.startswith("/*", i):
+            end = code.find("*/", i + 2)
+            if end == -1:
+                return None
+            i = end + 2
+            continue
+        elif c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    return None
+
+
+def _c_function_defs(code: str) -> list[dict]:
+    funcs = []
+    for m in _C_FUNC_DEF_RE.finditer(code):
+        name = m.group("name")
+        ret = m.group("ret").strip()
+        if name in _C_NOT_FUNCS or ret.split()[0] in _C_NOT_FUNCS:
+            continue
+        body_open = m.end() - 1
+        body_close = _find_matching_brace(code, body_open)
+        if body_close is None:
+            continue
+        funcs.append({"name": name, "ret": ret, "ret_span": (m.start("ret"), m.end("ret")),
+                      "body_open": body_open, "body_close": body_close})
+    return funcs
+
+
+def _first_top_level_slash(expr: str) -> Optional[int]:
+    depth = 0
+    for i, c in enumerate(expr):
+        if c in "([":
+            depth += 1
+        elif c in ")]":
+            depth -= 1
+        elif c == "/" and depth == 0 and expr[i + 1:i + 2] not in ("/", "*") and expr[i - 1:i] not in ("/", "*"):
+            return i
+    return None
+
+
+def _int_division_returns(code: str, func: dict) -> list[tuple[int, int, str]]:
+    """(start, end, replacement) edits turning every `return A / B;` inside
+    the function into `return (double)A / B;`. Empty if there's no such
+    return -- i.e. no evidence the int return type is throwing away a
+    fractional part."""
+    edits = []
+    body_start, body_end = func["body_open"] + 1, func["body_close"]
+    for rm in re.finditer(r"\breturn\b([^;]+);", code[body_start:body_end]):
+        expr_start = body_start + rm.start(1)
+        expr = rm.group(1)
+        slash = _first_top_level_slash(expr)
+        if slash is None:
+            continue
+        left, right = expr[:slash].strip(), expr[slash + 1:].strip()
+        if not left or not right:
+            continue
+        left = left if re.fullmatch(r"[\w.\[\]>-]+", left) and "(double)" not in left else f"({left})"
+        if left.startswith("(double)"):
+            continue
+        edits.append((expr_start, expr_start + len(expr), f" (double){left} / {right}"))
+    return edits
+
+
+def _printf_float_plan(code: str, line: Optional[int] = None,
+                       message: str = "") -> tuple[str, list[str]]:
+    funcs = _c_function_defs(code)
+    by_name = {f["name"]: f for f in funcs}
+    edits: dict[tuple[int, int], str] = {}
+    notes: list[str] = []
+    widened_funcs: set[str] = set()
+
+    def is_int_func(name: str) -> bool:
+        f = by_name.get(name)
+        return bool(f) and re.search(r"\bint\b", f["ret"]) is not None and "*" not in f["ret"]
+
+    def widen_func(name: str) -> bool:
+        if name in widened_funcs:
+            return True
+        f = by_name[name]
+        ret_edits = _int_division_returns(code, f)
+        if not ret_edits:
+            return False
+        for s, e, r in ret_edits:
+            edits[(s, e)] = r
+        rs, re_ = f["ret_span"]
+        edits[(rs, re_)] = re.sub(r"\bint\b", "double", code[rs:re_], count=1)
+        widened_funcs.add(name)
+        notes.append(f"'{name}()' returned an int, so its division truncated -- it now returns double")
+        return True
+
+    msg_arg = None
+    mm = _FLOAT_FMT_MSG_RE.search(message or "")
+    if mm:
+        msg_arg = int(mm.group(1))
+
+    for m in _PRINTF_CALL_START.finditer(code):
+        open_idx = m.end() - 1
+        close_idx = _find_matching_paren(code, open_idx)
+        if close_idx is None:
+            continue
+        args = _split_top_level_args(code[open_idx + 1:close_idx])
+        fmt_idx = 0 if m.group(1) == "printf" else 1
+        if len(args) <= fmt_idx:
+            continue
+        lits = re.findall(r'"(?:[^"\\]|\\.)*"', args[fmt_idx])
+        if not lits or re.sub(r'"(?:[^"\\]|\\.)*"|\s', "", args[fmt_idx]):
+            continue  # format isn't purely string literal(s): don't guess
+        fmt = "".join(l[1:-1] for l in lits).replace("%%", "\x00\x00")
+        specs = list(_PRINTF_SPEC_RE.finditer(fmt))
+        if any(s.group("width") == "*" or s.group("prec") == "*" for s in specs):
+            continue
+        variadic = args[fmt_idx + 1:]
+        if len(specs) != len(variadic):
+            continue
+
+        call_line = code.count("\n", 0, m.start()) + 1
+        call_end_line = code.count("\n", 0, close_idx) + 1
+        offset = open_idx + 1 + sum(len(a) + 1 for a in args[:fmt_idx + 1])
+        func = next((f for f in funcs if f["body_open"] < m.start() < f["body_close"]), None)
+
+        for k, (spec, arg) in enumerate(zip(specs, variadic)):
+            arg_off = offset
+            offset += len(arg) + 1
+            if spec.group("conv") not in _FLOAT_CONVS or spec.group("len") not in (None, "l"):
+                continue
+            stripped = arg.strip()
+            lead = len(arg) - len(arg.lstrip())
+            span = (arg_off + lead, arg_off + lead + len(stripped))
+            call_m = re.fullmatch(r"([A-Za-z_]\w*)\s*\(.*\)", stripped, re.DOTALL)
+            if call_m and _find_matching_paren(stripped, stripped.index("(")) != len(stripped) - 1:
+                call_m = None
+
+            if call_m and is_int_func(call_m.group(1)):
+                if widen_func(call_m.group(1)):
+                    continue
+            elif re.fullmatch(r"[A-Za-z_]\w*", stripped) and func:
+                decls = list(re.finditer(
+                    rf"\b(?P<ty>int)[ \t]+{re.escape(stripped)}\b[ \t]*(?:=[ \t]*(?P<init>[^;,]+))?[;,]",
+                    code[func["body_open"]:m.start()]))
+                if decls:
+                    d = decls[-1]
+                    init = (d.group("init") or "").strip()
+                    ic = re.match(r"([A-Za-z_]\w*)\s*\(", init)
+                    if ic and is_int_func(ic.group(1)) and widen_func(ic.group(1)):
+                        ts = func["body_open"] + d.start("ty")
+                        edits[(ts, ts + 3)] = "double"
+                        notes.append(f"'{stripped}' held that result in an int -- it is now a double")
+                        continue
+
+            # Fallback: cast, only on the exact argument gcc named.
+            targeted = (line is not None and call_line <= line <= call_end_line
+                        and msg_arg is not None and msg_arg - fmt_idx - 2 == k)
+            if targeted:
+                edits[span] = (f"(double){stripped}" if (call_m or re.fullmatch(r"[A-Za-z_]\w*", stripped))
+                               else f"(double)({stripped})")
+                notes.append(f"argument '{stripped}' is an int, so it is cast to double for the %{spec.group('conv')} conversion")
+
+    if not edits:
+        return code, []
+    out = code
+    for (s, e), text in sorted(edits.items(), reverse=True):
+        out = out[:s] + text + out[e:]
+    return out, notes
+
+
+def repair_printf_int_for_float(code: str, line: Optional[int] = None, message: str = "") -> str:
+    return _printf_float_plan(code, line, message)[0]
+
+
+def _try_printf_int_for_float(code: str, error_type: str, error_message: str,
+                               filename: str, language: str,
+                               line: Optional[int]) -> Optional[FixResult]:
+    if language != "c" or not _FLOAT_FMT_MSG_RE.search(error_message):
+        return None
+    cand, notes = _printf_float_plan(code, line, error_message)
+    if cand == code:
+        return None
+    ceiling, verified, note = _verify_fix(code, cand, error_type, error_message, filename, language)
+    if not verified:
+        return None
+    detail = "; ".join(notes)
+    return FixResult(
+        diff=make_diff(code, cand, filename), confidence=min(0.95, ceiling),
+        verified=True, raw_model_output="",
+        summary=("A floating-point format (%f/%e/%g) was given an int. " + detail[0].upper() + detail[1:] + "."),
+        checks=[{"status": "info", "text": "Deterministic repair -- no model call needed"},
+                {"status": "pass", "text": note}],
+        rationale=(f"[Invariantsmith: deterministic repair -- {detail}.] [{note}]"),
+    )
+
+
+# ---------------------------------------------------------------------
+# C: gets(buf)  ->  bounded fgets + newline strip
+# ---------------------------------------------------------------------
+_GETS_CALL_RE = re.compile(
+    r"^(?P<indent>[ \t]*)gets[ \t]*\([ \t]*(?P<buf>[A-Za-z_]\w*)[ \t]*\)[ \t]*;(?P<cr>[ \t]*\r?)$",
+    re.MULTILINE,
+)
+
+
+def repair_gets(code: str) -> str:
+    """Replace `gets(buf);` -- unbounded, removed in C11 -- with a bounded
+    fgets() on a `char buf[N]` array, then strip the trailing newline the
+    way gets() would have. Only touches arrays declared in the file, since
+    sizeof(buf) is only meaningful for an array (a `char *` is left alone)."""
+    nl = "\r\n" if "\r\n" in code else "\n"
+    changed = False
+
+    def repl(m):
+        nonlocal changed
+        buf = m.group("buf")
+        if not re.search(rf"\bchar\s+{re.escape(buf)}\s*\[[^\]]+\]", code[:m.start()]):
+            return m.group(0)
+        changed = True
+        ind = m.group("indent")
+        return (f"{ind}if (fgets({buf}, sizeof({buf}), stdin) == NULL){nl}"
+                f"{ind}    {buf}[0] = '\\0';{nl}"
+                f"{ind}{buf}[strcspn({buf}, \"\\n\")] = '\\0';{m.group('cr')}")
+
+    out = _GETS_CALL_RE.sub(repl, code)
+    if changed and not re.search(r'#\s*include\s*[<"]string\.h[">]', out):
+        includes = list(re.finditer(r"^[ \t]*#\s*include\b[^\n]*\n", out, re.MULTILINE))
+        pos = includes[-1].end() if includes else 0
+        out = out[:pos] + "#include <string.h>" + nl + out[pos:]
+    return out
+
+
+def _try_gets_to_fgets(code: str, error_type: str, error_message: str,
+                        filename: str, language: str,
+                        line: Optional[int]) -> Optional[FixResult]:
+    if language != "c" or not re.search(r"\bgets\b", error_message):
+        return None
+    cand = repair_gets(code)
+    if cand == code:
+        return None
+    ceiling, verified, note = _verify_fix(code, cand, error_type, error_message, filename, language)
+    if not verified:
+        return None
+    return FixResult(
+        diff=make_diff(code, cand, filename), confidence=min(0.95, ceiling),
+        verified=True, raw_model_output="",
+        summary="gets() has no length limit (and was removed from C11); it was replaced with a bounded fgets().",
+        checks=[{"status": "info", "text": "Deterministic repair -- no model call needed"},
+                {"status": "pass", "text": note}],
+        rationale=("[Invariantsmith: deterministic repair -- gets() cannot be told the buffer size, so "
+                   "any long line overflows it; fgets(buf, sizeof(buf), stdin) is bounded, and the "
+                   f"trailing newline is stripped to match gets() behaviour.] [{note}]"),
+    )
+
+
+# ---------------------------------------------------------------------
+# C: printf("%ld", <long long>) -- integer length-modifier mismatches
+# ---------------------------------------------------------------------
+# gcc: "format '%ld' expects argument of type 'long int', but argument 2 has
+# type 'long long int'". Platform-dependent: on 64-bit Windows (MinGW) long is
+# 32 bits and ptrdiff_t/size_t are `long long`, so the same source that is
+# clean on Linux warns there. The message states the argument's real type, so
+# the fix is mechanical -- no model needed (and a 1.5B model happily invents
+# an unrelated "buffer overflow" story for it).
+
+_INT_FMT_MSG_RE = re.compile(
+    r"format [\u2018']%(?P<spec>[^\u2019']+)[\u2019'] expects argument of type "
+    r"[\u2018'](?P<want>[^\u2019']+)[\u2019'], but argument (?P<n>\d+) has type "
+    r"[\u2018'](?P<have>[^\u2019']+)[\u2019']"
+)
+_INT_TYPE_TO_LEN = {
+    "long long int": ("ll", "d"), "long long unsigned int": ("ll", "u"),
+    "long int": ("l", "d"), "long unsigned int": ("l", "u"),
+    "int": ("", "d"), "unsigned int": ("", "u"),
+    "short int": ("h", "d"), "short unsigned int": ("h", "u"),
+    "char": ("hh", "d"), "unsigned char": ("hh", "u"), "signed char": ("hh", "d"),
+}
+_INT_CONVS = set("diuxXo")
+
+
+def _declared_pointer_or_array(code_before: str, name: str) -> bool:
+    n = re.escape(name)
+    return bool(re.search(rf"\*+\s*{n}\b", code_before) or re.search(rf"\b{n}\s*\[", code_before))
+
+
+def _printf_int_length_plan(code: str, line: Optional[int], message: str) -> tuple[str, str]:
+    mm = _INT_FMT_MSG_RE.search(message or "")
+    if not mm or line is None:
+        return code, ""
+    have = mm.group("have").strip()
+    if have not in _INT_TYPE_TO_LEN and not mm.group("want").strip() in _INT_TYPE_TO_LEN:
+        return code, ""
+    msg_arg = int(mm.group("n"))
+    for m in _PRINTF_CALL_START.finditer(code):
+        open_idx = m.end() - 1
+        close_idx = _find_matching_paren(code, open_idx)
+        if close_idx is None:
+            continue
+        first_line = code.count("\n", 0, m.start()) + 1
+        last_line = code.count("\n", 0, close_idx) + 1
+        if not (first_line <= line <= last_line):
+            continue
+        args = _split_top_level_args(code[open_idx + 1:close_idx])
+        fmt_idx = 0 if m.group(1) == "printf" else 1
+        k = msg_arg - fmt_idx - 2
+        if len(args) <= fmt_idx or k < 0 or fmt_idx + 1 + k >= len(args):
+            continue
+        fmt_arg = args[fmt_idx]
+        if fmt_arg.count('"') != 2 or re.sub(r'"(?:[^"\\]|\\.)*"|\s', "", fmt_arg):
+            continue
+        fmt_off = open_idx + 1 + sum(len(a) + 1 for a in args[:fmt_idx])
+        q1 = fmt_arg.index('"')
+        lit_start = fmt_off + q1 + 1
+        literal = fmt_arg[q1 + 1:fmt_arg.rindex('"')].replace("%%", "\x00\x00")
+        specs = list(_PRINTF_SPEC_RE.finditer(literal))
+        if len(specs) != len(args) - fmt_idx - 1 or k >= len(specs):
+            continue
+        spec = specs[k]
+        conv = spec.group("conv")
+        if conv not in _INT_CONVS:
+            continue
+        arg = args[fmt_idx + 1 + k].strip()
+
+        new_len, new_conv = None, conv
+        sub = re.fullmatch(r"([A-Za-z_]\w*)\s*-\s*([A-Za-z_]\w*)", arg)
+        if sub:
+            pre = code[:m.start()]
+            if all(_declared_pointer_or_array(pre, g) for g in sub.groups()):
+                new_len, new_conv = "t", "d"          # ptrdiff_t: %td on every platform
+        if new_len is None and re.match(r"(sizeof\b|strlen\s*\()", arg):
+            new_len, new_conv = "z", "u"              # size_t: %zu on every platform
+        if new_len is None:
+            if have not in _INT_TYPE_TO_LEN:
+                continue
+            new_len, signed_conv = _INT_TYPE_TO_LEN[have]
+            if conv in "du" or conv == "i":
+                new_conv = signed_conv
+        old_text = literal[spec.start():spec.end()]
+        new_text = (f"%{spec.group('flags') or ''}{spec.group('width') or ''}"
+                    f"{('.' + spec.group('prec')) if spec.group('prec') is not None else ''}"
+                    f"{new_len}{new_conv}")
+        if new_text == old_text:
+            continue
+        s = lit_start + spec.start()
+        e = lit_start + spec.end()
+        return code[:s] + new_text + code[e:], f"'{old_text}' became '{new_text}' to match the argument '{arg}'"
+    return code, ""
+
+
+def repair_printf_int_length(code: str, line: Optional[int] = None, message: str = "") -> str:
+    return _printf_int_length_plan(code, line, message)[0]
+
+
+def _try_printf_int_length(code: str, error_type: str, error_message: str,
+                            filename: str, language: str,
+                            line: Optional[int]) -> Optional[FixResult]:
+    if language != "c" or not _INT_FMT_MSG_RE.search(error_message):
+        return None
+    cand, detail = _printf_int_length_plan(code, line, error_message)
+    if cand == code:
+        return None
+    ceiling, verified, note = _verify_fix(code, cand, error_type, error_message, filename, language)
+    if not verified:
+        return None
+    return FixResult(
+        diff=make_diff(code, cand, filename), confidence=min(0.95, ceiling),
+        verified=True, raw_model_output="",
+        summary=f"The printf length modifier did not match the argument's type: {detail}.",
+        checks=[{"status": "info", "text": "Deterministic repair -- no model call needed"},
+                {"status": "pass", "text": note}],
+        rationale=(f"[Invariantsmith: deterministic repair -- {detail}. Pointer differences use %td "
+                   f"and sizes use %zu so the code is correct on every platform.] [{note}]"),
+    )
+
+
 def suggest_fix(code: str, error_type: str, error_message: str,
                  filename: str = "buffer.py", language: Optional[str] = None,
                  line: Optional[int] = None) -> FixResult:
@@ -866,6 +1516,10 @@ def suggest_fix(code: str, error_type: str, error_message: str,
     fence = languages.LANGUAGES[lang].fence
     quick = (_try_python_string_repair(code, error_type, error_message, filename, lang, line)
              or _try_scanf_address_of_typo(code, error_type, error_message, filename, lang, line)
+             or _try_printf_int_for_float(code, error_type, error_message, filename, lang, line)
+             or _try_gets_to_fgets(code, error_type, error_message, filename, lang, line)
+             or _try_printf_int_length(code, error_type, error_message, filename, lang, line)
+             or _try_assignment_in_condition_typo(code, error_type, error_message, filename, lang, line)
              or _try_missing_open_brace(code, error_type, error_message, filename, lang, line))
     if quick:
         return quick

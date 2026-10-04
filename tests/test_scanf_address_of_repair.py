@@ -72,3 +72,73 @@ def test_end_to_end_suggest_fix_is_deterministic_and_verified():
     assert result.confidence > 0
     assert "+    scanf(\"%d\", &n);" in result.diff
     assert "main(void)" not in result.diff  # no unrelated, hallucinated changes
+
+
+# --- missing '&' entirely (no stray '%' at all) ---------------------------
+# Reported from a real session: `sscanf(text, "%d", value);` with a bare
+# `int value` (no '%', no '&' at all). The stray-'%' repair above didn't
+# fire -- there's no '%' on the argument to catch -- so this fell through to
+# the chunked/scoped model path, which hallucinated an unrelated snippet
+# (the libc prototype of sscanf) instead of fixing the call, and got
+# correctly refused by _splice()'s truncation guard rather than corrupting
+# the file. This case closes that gap deterministically.
+
+MISSING_AMP = (
+    '#include <stdio.h>\n'
+    'int parse_integer(const char *text) {\n'
+    '    int value;\n'
+    '    sscanf(text, "%d", value);\n'
+    '    return value;\n'
+    '}\n'
+)
+
+
+def test_repair_adds_missing_ampersand_on_bare_scalar():
+    fixed = repair_scanf_address_of(MISSING_AMP)
+    assert fixed == MISSING_AMP.replace(
+        'sscanf(text, "%d", value);', 'sscanf(text, "%d", &value);'
+    )
+
+
+def test_repair_leaves_string_buffer_args_alone():
+    """%s (and a scanset %[...]) take a buffer the caller already passed as
+    a pointer -- adding '&' there would break a correct call."""
+    code = (
+        '#include <stdio.h>\n'
+        'void f(const char *text) {\n'
+        '    char buf[32];\n'
+        '    sscanf(text, "%31s", buf);\n'
+        '}\n'
+    )
+    assert repair_scanf_address_of(code) == code
+
+
+def test_repair_leaves_mismatched_conversion_count_alone():
+    """If the format string's conversions and the trailing arguments don't
+    line up 1:1, don't guess which argument maps to which conversion."""
+    code = 'void f(int a){ int x, y; sscanf("1 2", "%d %d", x, y, &a); }'
+    assert repair_scanf_address_of(code) == code
+
+
+def test_repair_leaves_already_correct_pointer_args_alone():
+    code = 'void f(int *p){ sscanf("1", "%d", p); }'
+    assert repair_scanf_address_of(code) == code
+
+
+def test_repair_handles_both_typo_kinds_in_the_same_call():
+    code = 'void f(const char *s){ int a, b; sscanf(s, "%d %d", %a, b); }'
+    assert repair_scanf_address_of(code) == (
+        'void f(const char *s){ int a, b; sscanf(s, "%d %d", &a, &b); }'
+    )
+
+
+def test_end_to_end_suggest_fix_handles_missing_ampersand():
+    errs = error_detector.analyze(MISSING_AMP, "Untitled.c", "c")
+    err = next((e for e in errs if e.severity in ("syntax", "warning")), None)
+    assert err is not None, "the broken sscanf call should be flagged by the analyzer"
+    result = _try_scanf_address_of_typo(
+        MISSING_AMP, err.error_type, err.message, "Untitled.c", "c", err.line,
+    )
+    assert result is not None, "deterministic repair should handle this file"
+    assert result.verified is True
+    assert "+    sscanf(text, \"%d\", &value);" in result.diff
